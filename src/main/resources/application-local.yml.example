@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    username: sanmarcos_app
+    password: "CAMBIAR_POR_TU_CLAVE_LOCAL"
+  jpa:
+    show-sql: true

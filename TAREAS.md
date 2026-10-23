@@ -35,6 +35,8 @@ Al finalizar, el sistema debe permitir:
 - [x] Proyecto Spring Boot inicializado.
 - [x] Frontend React funcionando con `mockDB`.
 - [x] Plan de backend y frontend definido.
+- [x] Esquema `V1__schema.sql` completo con las 10 tablas.
+- [x] Configuración local con `application.yml` y `application-local.yml.example`.
 - [ ] Backend implementado.
 - [ ] Frontend conectado al backend.
 - [ ] Pruebas completas.
@@ -80,14 +82,16 @@ Usar un solo tablero para backend y frontend. Trello no tiene sprints ni swimlan
 ### Backend
 
 ```properties
-DB_URL=jdbc:mysql://localhost:3306/sanmarcos_db?serverTimezone=America/Santiago
+DB_URL=jdbc:mysql://localhost:3306/sanmarcos_db?serverTimezone=America/Santiago&useSSL=false&allowPublicKeyRetrieval=true
 DB_USERNAME=sanmarcos_app
-DB_PASSWORD=definir_en_entorno_local
+DB_PASSWORD=definir_en_application_local_yml
 JWT_SECRET=definir_secreto_de_al_menos_32_caracteres
 JWT_EXPIRATION=7200
-CORS_ORIGINS=http://localhost:5173,https://ncatalanv.github.io
+CORS_ORIGINS=http://localhost:5173,http://localhost:4173,https://ncatalanv.github.io
 SERVER_PORT=8080
 ```
+
+> En local, crear `application-local.yml` a partir de `application-local.yml.example`. Spring Boot no lee archivos `.env` automáticamente. En EC2 se usan variables de entorno.
 
 ### Frontend
 
@@ -120,13 +124,17 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Configurar MySQL, Flyway y variables de entorno
 
-- [ ] Verificar conexión a `sanmarcos_db` con el usuario dedicado.
-- [ ] Configurar `application.yml` con el perfil `mysql`.
-- [ ] Agregar variables `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` y `JWT_SECRET`.
-- [ ] Configurar Flyway y la ubicación de las migraciones.
-- [ ] Crear la migración inicial `V1__schema.sql`.
-- [ ] Verificar que la aplicación arranque con `spring-boot:run`.
+- [x] Verificar conexión a `sanmarcos_db` con el usuario dedicado.
+- [x] Configurar `application.yml` con perfil local y variables para producción.
+- [x] Agregar variables `DB_URL`, `DB_USERNAME` y `DB_PASSWORD`; `JWT_SECRET` se agrega en Fase 1.
+- [x] Configurar Flyway y la ubicación de las migraciones.
+- [x] Crear la migración inicial `V1__schema.sql` con las 10 tablas.
+- [x] Crear `application-local.yml.example`.
+- [x] Verificar que la aplicación arranque con `spring-boot:run`.
+- [x] Verificar que Flyway aplique `V1` en MySQL.
 - [ ] Documentar las variables en el README.
+
+> `V1__schema.sql` es la fuente de verdad del esquema. Una vez ejecutado, no se edita; los cambios se realizan en `V2`, `V3`, etc.
 
 #### [BE] Configurar CORS y Swagger base
 
@@ -170,8 +178,9 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 - [ ] Crear entidad `Mascota` con relación al usuario.
 - [ ] Definir la relación usuario-rol.
 - [ ] Crear repositorios.
-- [ ] Crear migración Flyway.
-- [ ] Agregar restricciones e índices.
+- [ ] Alinear las entidades con `V1__schema.sql`.
+- [ ] Crear una migración Flyway solo si falta un campo o una restricción.
+- [ ] Verificar las restricciones e índices existentes en `V1`.
 - [ ] Probar persistencia y relaciones.
 
 #### [BE] Implementar login, registro y JWT
@@ -242,7 +251,7 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 - [ ] Crear entidad `Servicio`.
 - [ ] Definir relaciones con categoría.
 - [ ] Crear repositorios.
-- [ ] Crear migración Flyway.
+- [ ] Crear `V2__seed_catalog.sql` solo para datos iniciales; las tablas ya existen en `V1`.
 - [ ] Cargar catálogo inicial.
 - [ ] Probar persistencia.
 
@@ -314,8 +323,8 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 - [ ] Definir estados de orden.
 - [ ] Definir relaciones.
 - [ ] Crear repositorios.
-- [ ] Crear migración Flyway.
-- [ ] Agregar índices.
+- [ ] Verificar las tablas `ordenes` y `orden_detalle` de `V1`; no crear tablas nuevas.
+- [ ] Agregar índices solo si falta alguno.
 - [ ] Probar persistencia.
 
 #### [BE] Lógica transaccional de stock y totales
@@ -395,7 +404,7 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 - [ ] Definir estados.
 - [ ] Definir relaciones con usuario y servicio.
 - [ ] Crear repositorio.
-- [ ] Crear migración Flyway.
+- [ ] Verificar la tabla `solicitudes_servicio` de `V1`; no crear tablas nuevas.
 - [ ] Implementar `POST /api/v1/service-requests`.
 - [ ] Implementar `GET /me`, `GET` admin y `GET /{id}`.
 - [ ] Documentar en Swagger.
@@ -462,7 +471,8 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 #### [BE] Endpoints de blog
 
 - [ ] Crear entidad `Post`.
-- [ ] Crear migración y datos iniciales.
+- [ ] Verificar la tabla `posts` de `V1`.
+- [ ] Crear una migración solo para los datos iniciales del blog.
 - [ ] Implementar `GET /api/v1/posts`.
 - [ ] Implementar `GET /api/v1/posts/{slug}`.
 - [ ] Implementar CRUD solo admin.
