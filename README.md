@@ -101,8 +101,10 @@ git check-ignore -v src/main/resources/application-local.yml
 En Windows:
 
 ```powershell
-.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"
 ```
+
+> En PowerShell, los argumentos `-D` que contienen puntos deben ir entre comillas. Sin comillas, PowerShell puede dividir el argumento y Maven mostrará `Unknown lifecycle phase`.
 
 En Linux o macOS:
 
