@@ -8,6 +8,7 @@ spring:
     username: ${DB_USERNAME:sanmarcos_app}
     password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    
 
   jpa:
     hibernate:
@@ -21,9 +22,13 @@ spring:
 server:
   port: ${SERVER_PORT:8080}
 
+app:
+  cors:
+    allowed-origins: "${CORS_ORIGINS:http://localhost:5173,http://localhost:4173,https://ncatalanv.github.io}"
+
+
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
-    path: /swagger-ui/index.html
     operationsSorter: method
