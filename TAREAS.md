@@ -132,7 +132,7 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 - [x] Crear `application-local.yml.example`.
 - [x] Verificar que la aplicación arranque con `spring-boot:run`.
 - [x] Verificar que Flyway aplique `V1` en MySQL.
-- [ ] Documentar las variables en el README.
+- [x] Documentar las variables en el README.
 
 > `V1__schema.sql` es la fuente de verdad del esquema. Una vez ejecutado, no se edita; los cambios se realizan en `V2`, `V3`, etc.
 
