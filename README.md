@@ -126,9 +126,14 @@ Con la aplicación levantada:
 
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 - Documento OpenAPI: `http://localhost:8080/v3/api-docs`
-- Health check: se agregará en la tarjeta de CORS/Swagger como `GET /api/v1/health`.
 
-El esquema de seguridad Bearer JWT se habilitará en la Fase 1.
+## Contrato API
+
+El contrato completo de la API REST (endpoints, roles, DTOs, códigos HTTP, errores y reglas de negocio) se encuentra en:
+
+- [`API_CONTRACT.md`](./API_CONTRACT.md)
+
+Este documento debe mantenerse actualizado cuando se agreguen o modifiquen endpoints. Swagger también debe reflejar los cambios realizados.
 
 ## Flyway y esquema
 
