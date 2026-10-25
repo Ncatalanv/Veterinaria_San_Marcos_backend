@@ -1,5 +1,7 @@
 # Contrato API - Veterinaria San Marcos
 
+# Contrato entre backend y frontend sobre cómo se van a comunicar entre sí.
+
 Versión: `v1`  
 Base URL: `http://localhost:8080/api/v1` (local) / `https://[dominio-ec2]/api/v1` (producción)  
 Autenticación: JWT Bearer Token  
@@ -567,15 +569,3 @@ Los endpoints marcados como "Eliminar/desactivar" usan **soft delete**: se actua
 - **Endpoints protegidos:** Requieren header `Authorization: Bearer {token}`
 - **Autorización por roles:** Usar `@PreAuthorize` o configuración en `SecurityFilterChain`
 - **CORS:** Configurado para `http://localhost:5173`, `http://localhost:4173`, `https://ncatalanv.github.io`
-
-## 7. Checklist de Validación
-
-- [x] Todos los endpoints mapeados según esta especificación
-- [x] Matriz de roles aplicada en backend (seguridad) y frontend (rutas/sidebar)
-- [x] DTOs con validación (`@Valid`, Bean Validation)
-- [x] Errores en formato Problem Details
-- [x] Transacciones en operaciones críticas (órdenes)
-- [x] Documentación actualizada en Swagger
-- [x] Permisos probados por cada rol
-- [x] Contrato guardado en `API_CONTRACT.md`
-- [x] Revisado en conjunto BE+FE
