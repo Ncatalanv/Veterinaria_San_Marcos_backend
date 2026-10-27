@@ -2,6 +2,8 @@
 spring:
   application:
     name: sanmarcos
+  profiles:
+    active: local
 
   datasource:
     url: "${DB_URL:jdbc:mysql://localhost:3306/sanmarcos_db?serverTimezone=America/Santiago&useSSL=false&allowPublicKeyRetrieval=true}"

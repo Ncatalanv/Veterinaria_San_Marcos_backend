@@ -138,22 +138,22 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Configurar CORS y Swagger base
 
-- [ ] Configurar orígenes permitidos: `localhost:5173` y GitHub Pages.
-- [ ] Permitir métodos y headers necesarios.
-- [ ] Configurar Springdoc y los metadatos de la API.
-- [ ] Agregar el esquema de seguridad Bearer JWT.
-- [ ] Verificar `/swagger-ui/index.html` y `/v3/api-docs`.
-- [ ] Documentar la URL de Swagger.
+- [x] Configurar orígenes permitidos: `localhost:5173` y GitHub Pages.
+- [x] Permitir métodos y headers necesarios.
+- [x] Configurar Springdoc y los metadatos de la API.
+- [x] Agregar el esquema de seguridad Bearer JWT.
+- [x] Verificar `/swagger-ui/index.html` y `/v3/api-docs`.
+- [x] Documentar la URL de Swagger.
 
 #### [BE+FE] Definir contrato API y matriz de roles
 
-- [ ] Listar endpoints por dominio.
-- [ ] Definir DTOs de entrada y salida.
-- [ ] Definir códigos HTTP y formato de errores.
-- [ ] Confirmar roles: `ADMIN`, `VENDEDOR`, `VETERINARIO`, `CLIENTE`.
-- [ ] Confirmar permisos por endpoint.
-- [ ] Guardar el contrato en el README o en Swagger.
-- [ ] Revisar el contrato en conjunto.
+- [x] Listar endpoints por dominio.
+- [x] Definir DTOs de entrada y salida.
+- [x] Definir códigos HTTP y formato de errores.
+- [x] Confirmar roles: `ADMIN`, `VENDEDOR`, `VETERINARIO`, `CLIENTE`.
+- [x] Confirmar permisos por endpoint.
+- [x] Guardar el contrato en el README o en Swagger.
+- [x] Revisar el contrato en conjunto.
 
 #### [FE] Crear cliente API y `.env.example`
 

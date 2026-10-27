@@ -120,12 +120,13 @@ Para compilar sin ejecutar pruebas:
 .\mvnw.cmd -q -DskipTests package
 ```
 
-## Swagger y OpenAPI
+## Documentación de la API
 
 Con la aplicación levantada:
 
-- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
-- Documento OpenAPI: `http://localhost:8080/v3/api-docs`
+- **Swagger UI:** `http://localhost:8080/swagger-ui/index.html`
+- **Documento OpenAPI (JSON):** `http://localhost:8080/v3/api-docs`
+- **Contrato API completo:** [`API_CONTRACT.md`](./API_CONTRACT.md) - Endpoints, roles, permisos, DTOs, códigos HTTP, errores RFC 7807, reglas de negocio y matriz endpoint x rol.
 
 ## Contrato API
 
