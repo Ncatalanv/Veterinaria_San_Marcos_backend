@@ -1,13 +1,11 @@
 package com.frontendlovers.sanmarcos.repository;
 
-import com.frontendlovers.sanmarcos.entity.Usuario;
+import com.frontendlovers.sanmarcos.entity.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface RolRepository extends JpaRepository<Usuario, Long> {
-    Optional<Usuario> findByRun(String run);
-    Optional<Usuario> findByEmail(String email);
-    boolean existsByRun(String run);
-    boolean existsByEmail(String email);
+public interface RolRepository extends JpaRepository<Rol, Long> {
+    Optional<Rol> findByNombre(String nombre);
+    boolean existsByNombre(String nombre);
 }
