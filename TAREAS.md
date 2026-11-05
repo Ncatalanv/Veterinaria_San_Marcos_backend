@@ -185,8 +185,8 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Implementar login, registro y JWT
 
-- [ ] Configurar `SecurityConfig` stateless.
-- [ ] Configurar BCrypt.
+- [x] Configurar `SecurityConfig` stateless.
+- [x] Configurar BCrypt.
 - [ ] Crear `JwtService` con firma y expiración.
 - [ ] Crear filtro JWT.
 - [ ] Implementar `UserDetailsService`.
