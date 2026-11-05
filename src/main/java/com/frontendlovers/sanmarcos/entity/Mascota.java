@@ -13,6 +13,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "mascotas")
 @Data
@@ -31,12 +34,16 @@ public class Mascota {
     @Column(nullable = false, length = 50)
     private String especie; // Ej: "Perro", "Gato"
 
-    @Column(length = 50)
+    @Column(length = 80)
     private String raza;
 
-    private Integer edad;
+    private LocalDate fechaNacimiento;
 
-    private Double peso;
+    @Column(length = 20)
+    private String sexo;
+
+    @Column(precision = 5, scale = 2)
+    private BigDecimal peso;
 
     // Relación ManyToOne: Muchas mascotas pertenecen a un mismo Usuario (dueño)
     @ManyToOne

@@ -27,7 +27,6 @@ public class Producto {
     @Column(name = "nombre", nullable = false, length = 120)
     private String nombre;
 
-    @Lob
     @Column(name = "descripcion")
     private String descripcion;
 

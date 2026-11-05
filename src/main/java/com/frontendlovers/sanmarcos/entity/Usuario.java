@@ -37,7 +37,7 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 150)
     private String email; // Único
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "password_hash", nullable = false, length = 255)
     private String password;
 
     @Column(length = 15)
