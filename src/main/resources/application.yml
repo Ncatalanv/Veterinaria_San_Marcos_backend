@@ -27,6 +27,9 @@ server:
 app:
   cors:
     allowed-origins: "${CORS_ORIGINS:http://localhost:5173,http://localhost:4173,https://ncatalanv.github.io}"
+  jwt:
+    secret: "${JWT_SECRET:sanmarcos-dev-secret-change-me-32chars-min}"
+    expiration: "${JWT_EXPIRATION:7200}"
 
 
 springdoc:

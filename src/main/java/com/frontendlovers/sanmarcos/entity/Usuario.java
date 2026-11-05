@@ -13,6 +13,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "usuarios")
 @Data
@@ -25,23 +27,34 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 12)
+    @Column(nullable = false, unique = true, length = 15)
     private String run; // Único, ej: "12345678-9"
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 80)
     private String nombre;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 80)
     private String apellido;
 
-    @Column(nullable = false, unique = true, length = 150)
+    @Column(nullable = false, unique = true, length = 120)
     private String email; // Único
 
     @Column(name = "password_hash", nullable = false, length = 255)
     private String password;
 
-    @Column(length = 15)
+    @Column(length = 20)
     private String telefono;
+
+    private LocalDate fechaNacimiento;
+
+    @Column(length = 255)
+    private String direccion;
+
+    @Column(length = 80)
+    private String region;
+
+    @Column(length = 80)
+    private String comuna;
 
     // Relación ManyToOne con la entidad Rol
     @ManyToOne
