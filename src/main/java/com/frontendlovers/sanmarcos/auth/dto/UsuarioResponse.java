@@ -3,6 +3,7 @@ package com.frontendlovers.sanmarcos.auth.dto;
 import com.frontendlovers.sanmarcos.entity.Usuario;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record UsuarioResponse(
         Long id,
@@ -15,7 +16,9 @@ public record UsuarioResponse(
         String direccion,
         String region,
         String comuna,
-        String rol
+        String rol,
+        Boolean activo,
+        LocalDateTime fechaRegistro
 ) {
 
     public static UsuarioResponse from(Usuario usuario) {
@@ -30,7 +33,9 @@ public record UsuarioResponse(
                 usuario.getDireccion(),
                 usuario.getRegion(),
                 usuario.getComuna(),
-                usuario.getRol() != null ? usuario.getRol().getNombre() : null
+                usuario.getRol() != null ? usuario.getRol().getNombre() : null,
+                usuario.getActivo(),
+                usuario.getCreatedAt()
         );
     }
 }

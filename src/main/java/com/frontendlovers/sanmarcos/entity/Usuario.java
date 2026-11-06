@@ -56,6 +56,10 @@ public class Usuario {
     @Column(length = 80)
     private String comuna;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean activo = Boolean.TRUE;
+
     // Relación ManyToOne con la entidad Rol
     @ManyToOne
     @JoinColumn(name = "rol_id", nullable = false)
