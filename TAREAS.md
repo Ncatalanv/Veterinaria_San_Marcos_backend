@@ -173,37 +173,37 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Modelo de usuarios, roles y mascotas
 
-- [ ] Crear entidad `Rol`.
-- [ ] Crear entidad `Usuario` con RUN y email únicos.
-- [ ] Crear entidad `Mascota` con relación al usuario.
-- [ ] Definir la relación usuario-rol.
-- [ ] Crear repositorios.
-- [ ] Alinear las entidades con `V1__schema.sql`.
-- [ ] Crear una migración Flyway solo si falta un campo o una restricción.
-- [ ] Verificar las restricciones e índices existentes en `V1`.
+- [x] Crear entidad `Rol`.
+- [x] Crear entidad `Usuario` con RUN y email únicos.
+- [x] Crear entidad `Mascota` con relación al usuario.
+- [x] Definir la relación usuario-rol.
+- [x] Crear repositorios.
+- [x] Alinear las entidades con `V1__schema.sql`.
+- [x] Crear una migración Flyway solo si falta un campo o una restricción.
+- [x] Verificar las restricciones e índices existentes en `V1`.
 - [ ] Probar persistencia y relaciones.
 
 #### [BE] Implementar login, registro y JWT
 
 - [x] Configurar `SecurityConfig` stateless.
 - [x] Configurar BCrypt.
-- [ ] Crear `JwtService` con firma y expiración.
-- [ ] Crear filtro JWT.
-- [ ] Implementar `UserDetailsService`.
-- [ ] Implementar `POST /api/v1/auth/register`.
-- [ ] Implementar `POST /api/v1/auth/login`.
-- [ ] Implementar `GET /api/v1/auth/me`.
-- [ ] Configurar respuesta 401 sin token.
-- [ ] Documentar endpoints en Swagger.
+- [x] Crear `JwtService` con firma y expiración.
+- [x] Crear filtro JWT.
+- [x] Implementar `UserDetailsService`.
+- [x] Implementar `POST /api/v1/auth/register`.
+- [x] Implementar `POST /api/v1/auth/login`.
+- [x] Implementar `GET /api/v1/auth/me`.
+- [x] Configurar respuesta 401 sin token.
+- [x] Documentar endpoints en Swagger.
 
 #### [BE] Manejo global de errores y validaciones
 
-- [ ] Crear `@RestControllerAdvice`.
-- [ ] Usar `ProblemDetail`.
-- [ ] Agregar validaciones a los DTOs.
-- [ ] Manejar 400, 401, 403, 404 y 409.
+- [x] Crear `@RestControllerAdvice`.
+- [x] Usar `ProblemDetail`.
+- [x] Agregar validaciones a los DTOs.
+- [x] Manejar 400, 401, 403, 404 y 409.
 - [ ] Validar RUN y email.
-- [ ] Evitar exponer stacktraces.
+- [x] Evitar exponer stacktraces.
 - [ ] Agregar pruebas de errores.
 
 #### [BE] Tests de autenticación y seguridad
@@ -246,10 +246,10 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Modelo y migraciones de catálogo
 
-- [ ] Crear entidad `Categoria` con tipo.
-- [ ] Crear entidad `Producto`.
-- [ ] Crear entidad `Servicio`.
-- [ ] Definir relaciones con categoría.
+- [x] Crear entidad `Categoria` con tipo.
+- [x] Crear entidad `Producto`.
+- [x] Crear entidad `Servicio`.
+- [x] Definir relaciones con categoría.
 - [ ] Crear repositorios.
 - [ ] Crear `V2__seed_catalog.sql` solo para datos iniciales; las tablas ya existen en `V1`.
 - [ ] Cargar catálogo inicial.
@@ -318,13 +318,13 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Modelo de órdenes y detalle
 
-- [ ] Crear entidad `Orden`.
-- [ ] Crear entidad `OrdenDetalle`.
-- [ ] Definir estados de orden.
-- [ ] Definir relaciones.
+- [x] Crear entidad `Orden`.
+- [x] Crear entidad `OrdenDetalle`.
+- [x] Definir estados de orden.
+- [x] Definir relaciones.
 - [ ] Crear repositorios.
-- [ ] Verificar las tablas `ordenes` y `orden_detalle` de `V1`; no crear tablas nuevas.
-- [ ] Agregar índices solo si falta alguno.
+- [x] Verificar las tablas `ordenes` y `orden_detalle` de `V1`; no crear tablas nuevas.
+- [x] Agregar índices solo si falta alguno.
 - [ ] Probar persistencia.
 
 #### [BE] Lógica transaccional de stock y totales
@@ -400,11 +400,11 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Modelo y endpoints de solicitudes
 
-- [ ] Crear entidad `SolicitudServicio`.
-- [ ] Definir estados.
-- [ ] Definir relaciones con usuario y servicio.
+- [x] Crear entidad `SolicitudServicio`.
+- [x] Definir estados.
+- [x] Definir relaciones con usuario y servicio.
 - [ ] Crear repositorio.
-- [ ] Verificar la tabla `solicitudes_servicio` de `V1`; no crear tablas nuevas.
+- [x] Verificar la tabla `solicitudes_servicio` de `V1`; no crear tablas nuevas.
 - [ ] Implementar `POST /api/v1/service-requests`.
 - [ ] Implementar `GET /me`, `GET` admin y `GET /{id}`.
 - [ ] Documentar en Swagger.
@@ -470,8 +470,8 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Endpoints de blog
 
-- [ ] Crear entidad `Post`.
-- [ ] Verificar la tabla `posts` de `V1`.
+- [x] Crear entidad `Post`.
+- [x] Verificar la tabla `posts` de `V1`.
 - [ ] Crear una migración solo para los datos iniciales del blog.
 - [ ] Implementar `GET /api/v1/posts`.
 - [ ] Implementar `GET /api/v1/posts/{slug}`.
