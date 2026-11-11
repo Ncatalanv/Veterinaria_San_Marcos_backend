@@ -143,6 +143,15 @@ class AuthErrorHandlingTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void meConTokenValidoRetorna200ConPerfil() throws Exception {
+        mockMvc.perform(get("/api/v1/auth/me")
+                        .header("Authorization", "Bearer " + tokenCliente))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("cliente.test@correo.com"))
+                .andExpect(jsonPath("$.rol").value("CLIENTE"));
+    }
+
     // ─── 403 
 
     @Test
