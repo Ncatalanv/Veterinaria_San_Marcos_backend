@@ -204,18 +204,18 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 - [x] Manejar 400, 401, 403, 404 y 409.
 - [x] Validar RUN y email.
 - [x] Evitar exponer stacktraces.
-- [ ] Agregar pruebas de errores.
+- [x] Agregar pruebas de errores.
 
 #### [BE] Tests de autenticación y seguridad
 
-- [ ] Probar login correcto.
-- [ ] Probar login incorrecto.
-- [ ] Probar registro con email duplicado.
-- [ ] Probar `/auth/me` sin token.
-- [ ] Probar token inválido o expirado.
-- [ ] Probar acceso admin con cliente.
-- [ ] Verificar que Swagger sea público.
-- [ ] Ejecutar `.\mvnw.cmd test`.
+- [x] Probar login correcto.
+- [x] Probar login incorrecto.
+- [x] Probar registro con email duplicado.
+- [x] Probar `/auth/me` sin token.
+- [x] Probar token inválido o expirado.
+- [x] Probar acceso admin con cliente.
+- [x] Verificar que Swagger sea público.
+- [x] Ejecutar `.\mvnw.cmd test`.
 
 #### [FE] Refactorizar AuthContext, login y registro
 
