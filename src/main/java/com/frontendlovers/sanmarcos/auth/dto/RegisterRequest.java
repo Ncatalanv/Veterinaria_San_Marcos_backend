@@ -1,6 +1,7 @@
 package com.frontendlovers.sanmarcos.auth.dto;
 
 import com.frontendlovers.sanmarcos.validation.RunChileno;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
@@ -18,6 +19,7 @@ public record RegisterRequest(
         @Size(max = 20) String telefono,
         @Size(max = 255) String direccion,
         @Size(max = 80) String region,
-        @Size(max = 80) String comuna
+        @Size(max = 80) String comuna,
+        @Valid MascotaRequest mascota
 ) {
 }
