@@ -1,7 +1,9 @@
 package com.frontendlovers.sanmarcos.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.frontendlovers.sanmarcos.entity.Mascota;
 import com.frontendlovers.sanmarcos.entity.Usuario;
+import com.frontendlovers.sanmarcos.repository.MascotaRepository;
 import com.frontendlovers.sanmarcos.repository.RolRepository;
 import com.frontendlovers.sanmarcos.repository.UsuarioRepository;
 import com.frontendlovers.sanmarcos.security.JwtService;
@@ -33,6 +35,7 @@ class AuthErrorHandlingTest {
     @Autowired ObjectMapper objectMapper;
     @Autowired UsuarioRepository usuarioRepository;
     @Autowired RolRepository rolRepository;
+    @Autowired MascotaRepository mascotaRepository;
     @Autowired PasswordEncoder passwordEncoder;
     @Autowired JwtService jwtService;
     @Autowired UsuarioUserDetailsService usuarioUserDetailsService;
@@ -169,6 +172,51 @@ class AuthErrorHandlingTest {
                         .content(registroJson(Map.of("email", "cliente.test@correo.com"))))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail").value("El email ya está registrado"));
+    }
+
+    // ─── registro con mascota opcional
+
+    @Test
+    void registroSinMascotaRetorna201ConToken() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registroJson(Map.of())))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.token").isString())
+                .andExpect(jsonPath("$.usuario.email").value("nuevo@correo.com"))
+                .andExpect(jsonPath("$.usuario.rol").value("CLIENTE"));
+
+        Usuario usuario = usuarioRepository.findByEmail("nuevo@correo.com").orElseThrow();
+        org.assertj.core.api.Assertions.assertThat(mascotaRepository.findByUsuarioId(usuario.getId())).isEmpty();
+    }
+
+    @Test
+    void registroConMascotaRetorna201YGuardaMascota() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registroJson(Map.of("mascota", Map.of(
+                                "nombre", "Firulais",
+                                "especie", "Perro",
+                                "raza", "Mestizo")))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.token").isString());
+
+        Usuario usuario = usuarioRepository.findByEmail("nuevo@correo.com").orElseThrow();
+        java.util.List<Mascota> mascotas = mascotaRepository.findByUsuarioId(usuario.getId());
+        org.assertj.core.api.Assertions.assertThat(mascotas).hasSize(1);
+        org.assertj.core.api.Assertions.assertThat(mascotas.get(0).getNombre()).isEqualTo("Firulais");
+        org.assertj.core.api.Assertions.assertThat(mascotas.get(0).getEspecie()).isEqualTo("Perro");
+    }
+
+    @Test
+    void registroConMascotaSinNombreRetorna400() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registroJson(Map.of("mascota", Map.of(
+                                "nombre", "",
+                                "especie", "Perro")))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors").isArray());
     }
 
     // flujos correctos y acceso público
