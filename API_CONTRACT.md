@@ -124,9 +124,16 @@ Los endpoints marcados como "Eliminar/desactivar" usan **soft delete**: se actua
   "telefono": "+56912345678",
   "direccion": "Calle 123",
   "region": "Metropolitana",
-  "comuna": "Santiago"
+  "comuna": "Santiago",
+  "mascota": {
+    "nombre": "Firulais",
+    "especie": "Perro",
+    "raza": "Mestizo"
+  }
 }
 ```
+
+> `mascota` es opcional: puede omitirse o enviarse como `null`. Si se envía, `nombre` y `especie` son obligatorios y `raza` es opcional. La mascota queda asociada al usuario registrado.
 
 **LoginRequest**
 ```json
