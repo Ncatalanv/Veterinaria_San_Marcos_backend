@@ -37,8 +37,8 @@ Al finalizar, el sistema debe permitir:
 - [x] Plan de backend y frontend definido.
 - [x] Esquema `V1__schema.sql` completo con las 10 tablas.
 - [x] Configuración local con `application.yml` y `application-local.yml.example`.
-- [ ] Backend implementado.
-- [ ] Frontend conectado al backend.
+- [-] Backend implementado.
+- [x] Frontend conectado al backend.
 - [ ] Pruebas completas.
 - [ ] Despliegue en AWS EC2 y GitHub Pages.
 
@@ -157,13 +157,13 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [FE] Crear cliente API y `.env.example`
 
-- [ ] Crear `src/services/api.js`.
-- [ ] Leer la URL base desde `VITE_API_URL`.
-- [ ] Implementar header `Authorization: Bearer`.
-- [ ] Implementar parseo de errores del backend.
-- [ ] Implementar manejo global de 401.
-- [ ] Crear `.env.example`.
-- [ ] Documentar cómo configurar el entorno local.
+- [x] Crear `src/services/api.js`.
+- [x] Leer la URL base desde `VITE_API_URL`.
+- [x] Implementar header `Authorization: Bearer`.
+- [x] Implementar parseo de errores del backend.
+- [x] Implementar manejo global de 401.
+- [x] Crear `.env.example`.
+- [x] Documentar cómo configurar el entorno local.
 
 **Criterio de cierre de fase:** backend y frontend levantan en local; la base responde; CORS permite el origen de Vite; Swagger está disponible.
 
@@ -202,7 +202,7 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 - [x] Usar `ProblemDetail`.
 - [x] Agregar validaciones a los DTOs.
 - [x] Manejar 400, 401, 403, 404 y 409.
-- [ ] Validar RUN y email.
+- [x] Validar RUN y email.
 - [x] Evitar exponer stacktraces.
 - [ ] Agregar pruebas de errores.
 
