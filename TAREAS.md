@@ -230,13 +230,13 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [FE] Manejo de sesión, 401 y rutas protegidas
 
-- [ ] Hacer que `logout` limpie token y usuario.
-- [ ] Manejar 401 desde el cliente API.
-- [ ] Redirigir al login cuando corresponda.
-- [ ] Actualizar `ProtectedRoute`.
-- [ ] Actualizar `AdminRoute` para los cuatro roles.
-- [ ] Evitar parpadeo de sesión al recargar.
-- [ ] Probar rutas públicas y privadas.
+- [x] Hacer que `logout` limpie token y usuario.
+- [x] Manejar 401 desde el cliente API.
+- [x] Redirigir al login cuando corresponda.
+- [x] Actualizar `ProtectedRoute`.
+- [x] Actualizar `AdminRoute` para los cuatro roles.
+- [x] Evitar parpadeo de sesión al recargar.
+- [x] Probar rutas públicas y privadas.
 
 **Criterio de cierre de fase:** registro, login y `/auth/me` funcionan; las rutas protegidas rechazan peticiones sin token; los roles se reconocen correctamente.
 
