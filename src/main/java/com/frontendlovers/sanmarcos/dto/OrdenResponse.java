@@ -11,6 +11,7 @@ import java.util.List;
 public record OrdenResponse(
         Long id,
         String numeroOrden,
+        Long usuarioId,
         String estado,
         BigDecimal total,
         TipoEntrega tipoEntrega,
@@ -27,6 +28,7 @@ public record OrdenResponse(
         return new OrdenResponse(
                 orden.getId(),
                 orden.getNumeroOrden(),
+                orden.getUsuario().getId(),
                 orden.getEstado().name(),
                 orden.getTotal(),
                 orden.getTipoEntrega(),

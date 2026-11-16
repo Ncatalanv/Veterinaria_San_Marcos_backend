@@ -173,6 +173,20 @@ public class OrdenService {
                 .orElseThrow(() -> new ResourceNotFoundException("Orden no encontrada")));
     }
 
+    @Transactional(readOnly = true)
+    public List<OrdenResponse> listarTodas() {
+        return ordenRepository.findAll().stream()
+                .map(OrdenResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrdenResponse> listarPorUsuario(Long usuarioId) {
+        return ordenRepository.findByUsuarioId(usuarioId).stream()
+                .map(OrdenResponse::from)
+                .toList();
+    }
+
     private String generarNumeroOrden() {
         long siguiente = ordenRepository.findTopByOrderByIdDesc()
                 .map(o -> o.getId() + 1)

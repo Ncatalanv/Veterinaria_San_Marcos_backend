@@ -341,14 +341,14 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Endpoints de órdenes y permisos
 
-- [ ] Implementar `POST /api/v1/orders`.
-- [ ] Implementar `GET /api/v1/orders/me`.
-- [ ] Implementar `GET /api/v1/orders`.
-- [ ] Implementar `GET /api/v1/orders/{id}`.
-- [ ] Implementar `PATCH /api/v1/orders/{id}/status`.
-- [ ] Crear DTOs de orden y detalle.
-- [ ] Documentar en Swagger.
-- [ ] Probar permisos por rol.
+- [x] Implementar `POST /api/v1/orders`.
+- [x] Implementar `GET /api/v1/orders/me`.
+- [x] Implementar `GET /api/v1/orders`.
+- [x] Implementar `GET /api/v1/orders/{id}`.
+- [x] Implementar `PATCH /api/v1/orders/{id}/status`.
+- [x] Crear DTOs de orden y detalle.
+- [x] Documentar en Swagger.
+- [x] Probar permisos por rol.
 
 #### [BE] Tests de órdenes, stock y cancelación
 
