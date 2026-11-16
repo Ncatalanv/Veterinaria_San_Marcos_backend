@@ -219,14 +219,14 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [FE] Refactorizar AuthContext, login y registro
 
-- [ ] Reemplazar `mockLogin` por llamadas a `authApi`.
-- [ ] Hacer `login` asíncrono.
-- [ ] Hacer `register` asíncrono.
-- [ ] Guardar token y usuario.
-- [ ] Restaurar sesión con `/auth/me`.
-- [ ] Actualizar `LoginPage`.
-- [ ] Actualizar `RegistroPage`.
-- [ ] Eliminar imports de `mockDB` en tiempo de ejecución.
+- [x] Reemplazar `mockLogin` por llamadas a `authApi`.
+- [x] Hacer `login` asíncrono.
+- [x] Hacer `register` asíncrono.
+- [x] Guardar token y usuario.
+- [x] Restaurar sesión con `/auth/me`.
+- [x] Actualizar `LoginPage`.
+- [x] Actualizar `RegistroPage`.
+- [x] Eliminar imports de `mockDB` en tiempo de ejecución.
 
 #### [FE] Manejo de sesión, 401 y rutas protegidas
 
