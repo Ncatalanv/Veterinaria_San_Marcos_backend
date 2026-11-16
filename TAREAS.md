@@ -411,14 +411,14 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Actualización de citas y estados
 
-- [ ] Implementar actualización de fecha y hora.
-- [ ] Implementar actualización de comentario.
-- [ ] Implementar cambio de estado.
-- [ ] Validar transiciones permitidas.
-- [ ] Permitir cancelación del cliente solo si está pendiente.
-- [ ] Restringir actualización a admin y veterinario.
-- [ ] Responder 409 ante estado inválido.
-- [ ] Agregar pruebas.
+- [x] Implementar actualización de fecha y hora.
+- [x] Implementar actualización de comentario.
+- [x] Implementar cambio de estado.
+- [x] Validar transiciones permitidas.
+- [x] Permitir cancelación del cliente solo si está pendiente.
+- [x] Restringir actualización a admin y veterinario.
+- [x] Responder 409 ante estado inválido.
+- [x] Agregar pruebas.
 
 #### [BE] Tests de solicitudes y roles
 

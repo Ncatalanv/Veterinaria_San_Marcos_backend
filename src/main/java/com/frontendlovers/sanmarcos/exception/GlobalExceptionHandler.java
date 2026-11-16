@@ -68,6 +68,14 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(SolicitudStateException.class)
+    public ProblemDetail handleSolicitudState(SolicitudStateException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Conflict");
+        return problem;
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleDataIntegrity(DataIntegrityViolationException ex) {
         log.warn("Conflicto de integridad de datos", ex);

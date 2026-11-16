@@ -12,9 +12,12 @@ import com.frontendlovers.sanmarcos.repository.MascotaRepository;
 import com.frontendlovers.sanmarcos.repository.ServicioRepository;
 import com.frontendlovers.sanmarcos.repository.SolicitudServicioRepository;
 import com.frontendlovers.sanmarcos.repository.UsuarioRepository;
+import com.frontendlovers.sanmarcos.exception.SolicitudStateException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -89,5 +92,76 @@ public class SolicitudServicioService {
     public SolicitudServicioResponse buscarPorId(Long id) {
         return SolicitudServicioResponse.from(solicitudRepository.findByIdWithRelations(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada")));
+    }
+
+    // Asigna o modifica fecha y hora de la cita
+    @Transactional
+    public SolicitudServicioResponse actualizarCita(Long id, LocalDate fechaCita, LocalTime horaCita) {
+        SolicitudServicio solicitud = buscarEntity(id);
+        validarEstadoModificable(solicitud);
+        solicitud.setFechaCita(fechaCita);
+        solicitud.setHoraCita(horaCita);
+        return SolicitudServicioResponse.from(solicitudRepository.save(solicitud));
+    }
+
+    // Actualiza el comentario de la solicitud
+    @Transactional
+    public SolicitudServicioResponse actualizarComentario(Long id, String comentario) {
+        SolicitudServicio solicitud = buscarEntity(id);
+        validarEstadoModificable(solicitud);
+        solicitud.setComentario(comentario);
+        return SolicitudServicioResponse.from(solicitudRepository.save(solicitud));
+    }
+
+    // Cambia el estado validando transiciones permitidas
+    @Transactional
+    public SolicitudServicioResponse cambiarEstado(Long id, EstadoSolicitud nuevoEstado) {
+        SolicitudServicio solicitud = buscarEntity(id);
+
+        if (solicitud.getEstado() == nuevoEstado) {
+            return SolicitudServicioResponse.from(solicitud);
+        }
+
+        boolean valido = switch (solicitud.getEstado()) {
+            case PENDIENTE -> nuevoEstado == EstadoSolicitud.CONFIRMADA || nuevoEstado == EstadoSolicitud.CANCELADA;
+            case CONFIRMADA -> nuevoEstado == EstadoSolicitud.COMPLETADA || nuevoEstado == EstadoSolicitud.CANCELADA;
+            default -> false;
+        };
+
+        if (!valido) {
+            throw new SolicitudStateException(
+                    String.format("Transición de estado no permitida: %s -> %s", solicitud.getEstado(), nuevoEstado));
+        }
+
+        solicitud.setEstado(nuevoEstado);
+        return SolicitudServicioResponse.from(solicitudRepository.save(solicitud));
+    }
+
+    // Cancelación por el cliente solo si está PENDIENTE
+    @Transactional
+    public SolicitudServicioResponse cancelar(Long id, Long usuarioId) {
+        SolicitudServicio solicitud = buscarEntity(id);
+
+        if (!solicitud.getUsuario().getId().equals(usuarioId)) {
+            throw new SolicitudStateException("No puedes cancelar una solicitud que no te pertenece");
+        }
+
+        if (solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
+            throw new SolicitudStateException("Solo se pueden cancelar solicitudes pendientes");
+        }
+
+        solicitud.setEstado(EstadoSolicitud.CANCELADA);
+        return SolicitudServicioResponse.from(solicitudRepository.save(solicitud));
+    }
+
+    private SolicitudServicio buscarEntity(Long id) {
+        return solicitudRepository.findByIdWithRelations(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
+    }
+
+    private void validarEstadoModificable(SolicitudServicio solicitud) {
+        if (solicitud.getEstado() == EstadoSolicitud.CANCELADA || solicitud.getEstado() == EstadoSolicitud.COMPLETADA) {
+            throw new SolicitudStateException("No se puede modificar una solicitud cancelada o completada");
+        }
     }
 }
