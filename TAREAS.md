@@ -257,14 +257,14 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Endpoints públicos de productos, servicios y categorías
 
-- [ ] Implementar `GET /api/v1/products`.
-- [ ] Implementar `GET /api/v1/products/{id}`.
-- [ ] Implementar `GET /api/v1/services`.
-- [ ] Implementar `GET /api/v1/services/{id}`.
-- [ ] Implementar `GET /api/v1/categories?type=`.
-- [ ] Agregar filtros por categoría, oferta y búsqueda.
-- [ ] Crear DTOs sin datos internos.
-- [ ] Documentar en Swagger.
+- [x] Implementar `GET /api/v1/products`.
+- [x] Implementar `GET /api/v1/products/{id}`.
+- [x] Implementar `GET /api/v1/services`.
+- [x] Implementar `GET /api/v1/services/{id}`.
+- [x] Implementar `GET /api/v1/categories?type=`.
+- [x] Agregar filtros por categoría, oferta y búsqueda.
+- [x] Crear DTOs sin datos internos.
+- [x] Documentar en Swagger.
 
 #### [BE] CRUD administrativo de productos y servicios
 
