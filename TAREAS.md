@@ -422,13 +422,13 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Tests de solicitudes y roles
 
-- [ ] Probar creación por cliente.
-- [ ] Probar que cliente vea solo sus solicitudes.
-- [ ] Probar que vendedor reciba 403.
-- [ ] Probar listado y actualización por veterinario.
-- [ ] Probar listado y actualización por admin.
-- [ ] Probar cancelación por cliente.
-- [ ] Ejecutar tests.
+- [x] Probar creación por cliente.
+- [x] Probar que cliente vea solo sus solicitudes.
+- [x] Probar que vendedor reciba 403.
+- [x] Probar listado y actualización por veterinario.
+- [x] Probar listado y actualización por admin.
+- [x] Probar cancelación por cliente.
+- [x] Ejecutar tests.
 
 #### [FE] Mis solicitudes y creación desde servicios
 

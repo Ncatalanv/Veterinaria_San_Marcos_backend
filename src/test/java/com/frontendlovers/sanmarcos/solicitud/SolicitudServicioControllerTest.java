@@ -1,9 +1,11 @@
 package com.frontendlovers.sanmarcos.solicitud;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.frontendlovers.sanmarcos.dto.SolicitudEstadoRequest;
 import com.frontendlovers.sanmarcos.dto.SolicitudServicioRequest;
 import com.frontendlovers.sanmarcos.dto.SolicitudServicioResponse;
 import com.frontendlovers.sanmarcos.entity.Usuario;
+import com.frontendlovers.sanmarcos.entity.enums.EstadoSolicitud;
 import com.frontendlovers.sanmarcos.repository.RolRepository;
 import com.frontendlovers.sanmarcos.repository.ServicioRepository;
 import com.frontendlovers.sanmarcos.repository.UsuarioRepository;
@@ -22,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,6 +51,7 @@ class SolicitudServicioControllerTest {
     private String tokenVeterinario;
     private String tokenAdmin;
     private String tokenVendedor;
+    private Usuario cliente2;
     private Long solicitudId;
     private Long servicioId;
 
@@ -54,7 +59,7 @@ class SolicitudServicioControllerTest {
     void setUp() {
         String suffix = String.valueOf(System.currentTimeMillis());
         Usuario cliente = crearUsuario("33.333.333-3", "CLIENTE", suffix);
-        Usuario cliente2 = crearUsuario("55.555.555-5", "CLIENTE", suffix + "b");
+        cliente2 = crearUsuario("55.555.555-5", "CLIENTE", suffix + "b");
         Usuario veterinario = crearUsuario("77.777.777-7", "VETERINARIO", suffix);
         Usuario admin = crearUsuario("22.222.222-2", "ADMIN", suffix);
         Usuario vendedor = crearUsuario("66.666.666-6", "VENDEDOR", suffix);
@@ -166,5 +171,28 @@ class SolicitudServicioControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void clienteSoloVeSusSolicitudes() throws Exception {
+        solicitudService.crear(cliente2.getId(), solicitudRequest());
+
+        mockMvc.perform(get("/api/v1/service-requests/me")
+                        .header("Authorization", "Bearer " + tokenCliente))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(solicitudId.intValue()));
+    }
+
+    @Test
+    void adminPuedeActualizarEstado() throws Exception {
+        String body = objectMapper.writeValueAsString(new SolicitudEstadoRequest(EstadoSolicitud.CONFIRMADA));
+
+        mockMvc.perform(patch("/api/v1/service-requests/{id}/status", solicitudId)
+                        .header("Authorization", "Bearer " + tokenAdmin)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("CONFIRMADA"));
     }
 }
