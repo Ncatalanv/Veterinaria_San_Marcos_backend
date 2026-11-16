@@ -27,4 +27,5 @@ public interface ServicioRepository extends JpaRepository<Servicio, Long> {
 
     @Query("SELECT s FROM Servicio s LEFT JOIN FETCH s.categoria WHERE s.id = :id")
     Optional<Servicio> findByIdWithCategoria(@Param("id") Long id);
+    Optional<Servicio> findTopByOrderByIdDesc();
 }
