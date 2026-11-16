@@ -352,14 +352,14 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Tests de órdenes, stock y cancelación
 
-- [ ] Probar orden válida.
-- [ ] Probar stock insuficiente.
-- [ ] Probar total con descuento.
-- [ ] Probar descuento de stock.
-- [ ] Probar restauración al cancelar.
-- [ ] Probar que cliente no vea órdenes ajenas.
-- [ ] Probar que vendedor no modifique órdenes.
-- [ ] Ejecutar tests.
+- [x] Probar orden válida.
+- [x] Probar stock insuficiente.
+- [x] Probar total con descuento.
+- [x] Probar descuento de stock.
+- [x] Probar restauración al cancelar.
+- [x] Probar que cliente no vea órdenes ajenas.
+- [x] Probar que vendedor no modifique órdenes.
+- [x] Ejecutar tests.
 
 #### [FE] Carrito y checkout contra la API
 

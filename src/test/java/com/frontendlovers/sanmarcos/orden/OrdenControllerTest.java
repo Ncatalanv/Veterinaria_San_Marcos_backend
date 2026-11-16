@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -197,5 +198,31 @@ class OrdenControllerTest {
         mockMvc.perform(get("/api/v1/orders")
                         .header("Authorization", "Bearer " + tokenVeterinario))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void clienteNoPuedeVerDetalleDeOrdenAjena() throws Exception {
+        OrdenResponse ordenAjena = ordenService.crearOrden(cliente2.getId(), ordenRequest(1));
+
+        mockMvc.perform(get("/api/v1/orders/{id}", ordenAjena.id())
+                        .header("Authorization", "Bearer " + tokenCliente))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void ordenValidaDescuentaStockViaEndpoint() throws Exception {
+        int cantidad = 3;
+        int stockAntes = productoRepository.findByCodigo("ALI-001").orElseThrow().getStock();
+        String body = objectMapper.writeValueAsString(ordenRequest(cantidad));
+
+        mockMvc.perform(post("/api/v1/orders")
+                        .header("Authorization", "Bearer " + tokenCliente)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.estado").value("PAGADA"));
+
+        int stockDespues = productoRepository.findByCodigo("ALI-001").orElseThrow().getStock();
+        assertThat(stockDespues).isEqualTo(stockAntes - cantidad);
     }
 }
