@@ -472,54 +472,54 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 - [x] Crear entidad `Post`.
 - [x] Verificar la tabla `posts` de `V1`.
-- [ ] Crear una migración solo para los datos iniciales del blog.
-- [ ] Implementar `GET /api/v1/posts`.
-- [ ] Implementar `GET /api/v1/posts/{slug}`.
-- [ ] Implementar CRUD solo admin.
-- [ ] Definir formato del contenido.
-- [ ] Documentar en Swagger.
-- [ ] Agregar pruebas.
+- [x] Crear una migración solo para los datos iniciales del blog.
+- [x] Implementar `GET /api/v1/posts`.
+- [x] Implementar `GET /api/v1/posts/{slug}`.
+- [x] Implementar CRUD solo admin.
+- [x] Definir formato del contenido.
+- [x] Documentar en Swagger.
+- [x] Agregar pruebas.
 
 #### [BE] Endpoint de métricas del dashboard
 
-- [ ] Contar órdenes.
-- [ ] Contar solicitudes.
-- [ ] Contar usuarios.
-- [ ] Contar productos.
-- [ ] Listar productos con stock crítico.
-- [ ] Obtener últimas órdenes y solicitudes.
-- [ ] Restringir a `ADMIN`.
-- [ ] Agregar pruebas.
+- [x] Contar órdenes.
+- [x] Contar solicitudes.
+- [x] Contar usuarios.
+- [x] Contar productos.
+- [x] Listar productos con stock crítico.
+- [x] Obtener últimas órdenes y solicitudes.
+- [x] Restringir a `ADMIN`.
+- [x] Agregar pruebas.
 
 #### [FE] Gestión de usuarios
 
-- [ ] Crear `usersApi`.
-- [ ] Refactorizar `AdminUsuariosPage`.
-- [ ] Refactorizar `AdminUsuarioForm`.
-- [ ] Mostrar y editar roles.
-- [ ] Conectar crear, editar y eliminar.
-- [ ] Manejar errores del backend.
-- [ ] Restringir la vista a admin.
+- [x] Crear `usersApi`.
+- [x] Refactorizar `AdminUsuariosPage`.
+- [x] Refactorizar `AdminUsuarioForm`.
+- [x] Mostrar y editar roles.
+- [x] Conectar crear, editar y eliminar.
+- [x] Manejar errores del backend.
+- [x] Restringir la vista a admin.
 
 #### [FE] Blog público y detalle
 
-- [ ] Crear `postsApi`.
-- [ ] Refactorizar `BlogPage`.
-- [ ] Refactorizar `BlogDetallePage`.
-- [ ] Agregar estados de carga y error.
-- [ ] Renderizar el contenido del backend.
-- [ ] Verificar imágenes y rutas.
+- [x] Crear `postsApi`.
+- [x] Refactorizar `BlogPage`.
+- [x] Refactorizar `BlogDetallePage`.
+- [x] Agregar estados de carga y error.
+- [x] Renderizar el contenido del backend.
+- [x] Verificar imágenes y rutas.
 
 #### [FE] Dashboard real y sidebar por rol
 
-- [ ] Conectar `AdminDashboard` con métricas reales.
-- [ ] Hacer dinámico `AdminSidebar`.
-- [ ] Admin: todas las secciones.
-- [ ] Vendedor: Productos y Órdenes.
-- [ ] Veterinario: Servicios y Solicitudes.
-- [ ] Cliente: sin acceso al panel admin.
-- [ ] Proteger rutas por rol.
-- [ ] Probar cada rol.
+- [x] Conectar `AdminDashboard` con métricas reales.
+- [x] Hacer dinámico `AdminSidebar`.
+- [x] Admin: todas las secciones.
+- [x] Vendedor: Productos y Órdenes.
+- [x] Veterinario: Servicios y Solicitudes.
+- [x] Cliente: sin acceso al panel admin.
+- [x] Proteger rutas por rol.
+- [x] Probar cada rol.
 
 **Criterio de cierre de fase:** cada rol ve únicamente las secciones permitidas y el dashboard usa datos reales.
 
@@ -731,6 +731,7 @@ http://localhost:8080/v3/api-docs
 
 | Fecha | Persona | Avance | Bloqueos |
 |---|---|---|---|
-| | | | |
-| | | | |
+| 16-11-2026 | | [FE] Gestión de usuarios: creado `usersApi`, refactorizados `AdminUsuariosPage` y `AdminUsuarioForm` para consumir el backend, eliminado `mockDB` de estas vistas. | Pendiente backend: endpoints `GET/POST/PUT/DELETE /api/v1/usuarios` |
+| 16-11-2026 | | [FE] Blog público y detalle: creado `postsApi`, refactorizados `BlogPage` y `BlogDetallePage` para consumir `/api/v1/posts`, agregados estados de carga/error, normalizadas imágenes. Backend ya tenía `PostController` y seed. | Sin bloqueos |
+| 16-11-2026 | | [FE] Dashboard real y sidebar por rol: creado `dashboardApi`, refactorizado `AdminDashboard` para consumir `/api/v1/dashboard/metrics`, ajustado `AdminSidebar` por rol, redirección por rol en `/admin`. Backend ya tenía `DashboardController`. | Sin bloqueos |
 | | | | |

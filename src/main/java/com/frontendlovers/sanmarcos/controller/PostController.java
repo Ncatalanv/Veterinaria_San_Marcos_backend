@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.controller;
+package com.frontendlovers.sanmarcos.controller;
 
 import com.frontendlovers.sanmarcos.dto.PostRequest;
 import com.frontendlovers.sanmarcos.dto.PostResponse;

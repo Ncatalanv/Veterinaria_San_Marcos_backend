@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.service;
+package com.frontendlovers.sanmarcos.service;
 
 import com.frontendlovers.sanmarcos.dto.dashboard.DashboardMetricsResponse;
 import com.frontendlovers.sanmarcos.dto.dashboard.ProductoStockCriticoItem;

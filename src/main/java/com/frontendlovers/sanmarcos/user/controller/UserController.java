@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.user.controller;
+package com.frontendlovers.sanmarcos.user.controller;
 
 import com.frontendlovers.sanmarcos.auth.dto.UsuarioResponse;
 import com.frontendlovers.sanmarcos.user.dto.UserCreateRequest;

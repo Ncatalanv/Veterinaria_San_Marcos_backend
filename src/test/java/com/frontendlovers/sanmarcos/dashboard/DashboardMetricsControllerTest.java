@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.dashboard;
+package com.frontendlovers.sanmarcos.dashboard;
 
 import com.frontendlovers.sanmarcos.entity.Orden;
 import com.frontendlovers.sanmarcos.entity.Producto;

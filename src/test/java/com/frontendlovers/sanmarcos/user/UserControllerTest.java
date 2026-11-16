@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.user;
+package com.frontendlovers.sanmarcos.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,7 +52,7 @@ class UserControllerTest {
         Rol rolCliente = rolRepository.findByNombre("CLIENTE").orElseThrow();
 
         Usuario admin = Usuario.builder()
-                .run("1.111.111-1")
+                .run("1.111.111-4")
                 .email("admin.users@correo.com")
                 .password(passwordEncoder.encode("password123"))
                 .nombre("Admin")
@@ -63,7 +63,7 @@ class UserControllerTest {
         tokenAdmin = jwtService.generateToken(usuarioUserDetailsService.loadUserByUsername(admin.getEmail()));
 
         usuarioCliente = Usuario.builder()
-                .run("2.222.222-2")
+                .run("2.222.222-8")
                 .email("cliente.users@correo.com")
                 .password(passwordEncoder.encode("password123"))
                 .nombre("Cliente")
@@ -76,7 +76,7 @@ class UserControllerTest {
 
     private String nuevoUsuarioJson(Map<String, Object> overrides) throws Exception {
         Map<String, Object> body = new HashMap<>();
-        body.put("run", "3.333.333-3");
+        body.put("run", "3.333.333-1");
         body.put("email", "nuevo.users@correo.com");
         body.put("password", "password123");
         body.put("nombre", "Nuevo");
@@ -152,7 +152,7 @@ class UserControllerTest {
         mockMvc.perform(post("/api/v1/users")
                         .header("Authorization", "Bearer " + tokenAdmin)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(nuevoUsuarioJson(Map.of("rol", "VENDEDOR", "email", "vend@correo.com", "run", "4.444.444-4"))))
+                        .content(nuevoUsuarioJson(Map.of("rol", "VENDEDOR", "email", "vend@correo.com", "run", "4.444.444-5"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.rol").value("VENDEDOR"));
     }
@@ -162,7 +162,7 @@ class UserControllerTest {
         mockMvc.perform(post("/api/v1/users")
                         .header("Authorization", "Bearer " + tokenAdmin)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(nuevoUsuarioJson(Map.of("email", "cliente.users@correo.com", "run", "5.555.555-5"))))
+                        .content(nuevoUsuarioJson(Map.of("email", "cliente.users@correo.com", "run", "5.555.555-9"))))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail").value("El email ya estǭ registrado"));
     }
@@ -172,7 +172,7 @@ class UserControllerTest {
         mockMvc.perform(post("/api/v1/users")
                         .header("Authorization", "Bearer " + tokenAdmin)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(nuevoUsuarioJson(Map.of("run", "2.222.222-2", "email", "otro@correo.com"))))
+                        .content(nuevoUsuarioJson(Map.of("run", "2.222.222-8", "email", "otro@correo.com"))))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail").value("El RUN ya estǭ registrado"));
     }
@@ -200,7 +200,7 @@ class UserControllerTest {
         mockMvc.perform(post("/api/v1/users")
                         .header("Authorization", "Bearer " + tokenAdmin)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(nuevoUsuarioJson(Map.of("rol", "NOEXISTE", "email", "rolx@correo.com", "run", "6.666.666-6"))))
+                        .content(nuevoUsuarioJson(Map.of("rol", "NOEXISTE", "email", "rolx@correo.com", "run", "6.666.666-2"))))
                 .andExpect(status().isNotFound());
     }
 
@@ -236,7 +236,7 @@ class UserControllerTest {
         mockMvc.perform(put("/api/v1/users/{id}", usuarioCliente.getId())
                         .header("Authorization", "Bearer " + tokenAdmin)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("run", "1.111.111-1"))))
+                        .content(objectMapper.writeValueAsString(Map.of("run", "1.111.111-4"))))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail").value("El RUN ya estǭ registrado"));
     }
@@ -273,7 +273,7 @@ class UserControllerTest {
         mockMvc.perform(post("/api/v1/users")
                         .header("Authorization", "Bearer " + tokenCliente)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(nuevoUsuarioJson(Map.of("email", "x@correo.com", "run", "7.777.777-7"))))
+                        .content(nuevoUsuarioJson(Map.of("email", "x@correo.com", "run", "7.777.777-6"))))
                 .andExpect(status().isForbidden());
     }
 }

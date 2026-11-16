@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.dto;
+package com.frontendlovers.sanmarcos.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

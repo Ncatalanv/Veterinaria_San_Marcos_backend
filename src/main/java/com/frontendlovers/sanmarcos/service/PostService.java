@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.service;
+package com.frontendlovers.sanmarcos.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

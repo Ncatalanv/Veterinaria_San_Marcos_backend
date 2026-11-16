@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.repository;
+package com.frontendlovers.sanmarcos.repository;
 
 import com.frontendlovers.sanmarcos.entity.Post;
 import org.springframework.data.domain.Page;

@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.controller;
+package com.frontendlovers.sanmarcos.controller;
 
 import com.frontendlovers.sanmarcos.dto.dashboard.DashboardMetricsResponse;
 import com.frontendlovers.sanmarcos.service.DashboardService;

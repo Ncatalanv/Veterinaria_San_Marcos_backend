@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.user.dto;
+package com.frontendlovers.sanmarcos.user.dto;
 
 import com.frontendlovers.sanmarcos.validation.RunChileno;
 import jakarta.validation.constraints.Email;

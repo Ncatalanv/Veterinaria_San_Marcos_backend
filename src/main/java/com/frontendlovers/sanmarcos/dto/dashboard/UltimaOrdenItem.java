@@ -1,4 +1,4 @@
-﻿package com.frontendlovers.sanmarcos.dto.dashboard;
+package com.frontendlovers.sanmarcos.dto.dashboard;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
