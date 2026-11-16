@@ -1,7 +1,9 @@
 package com.frontendlovers.sanmarcos.repository;
 
 import com.frontendlovers.sanmarcos.entity.Producto;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,4 +33,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     @Query("SELECT p FROM Producto p LEFT JOIN FETCH p.categoria WHERE p.id = :id")
     Optional<Producto> findByIdWithCategoria(@Param("id") Long id);
     Optional<Producto> findTopByOrderByIdDesc();
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Producto p WHERE p.id = :id")
+    Optional<Producto> findByIdWithLock(@Param("id") Long id);
 }

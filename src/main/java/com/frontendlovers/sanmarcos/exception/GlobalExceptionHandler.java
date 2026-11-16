@@ -52,6 +52,22 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(StockInsuficienteException.class)
+    public ProblemDetail handleStockInsuficiente(StockInsuficienteException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Conflict");
+        return problem;
+    }
+
+    @ExceptionHandler(OrdenStateException.class)
+    public ProblemDetail handleOrdenState(OrdenStateException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Conflict");
+        return problem;
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleDataIntegrity(DataIntegrityViolationException ex) {
         log.warn("Conflicto de integridad de datos", ex);

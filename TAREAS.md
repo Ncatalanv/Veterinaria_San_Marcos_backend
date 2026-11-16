@@ -329,15 +329,15 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 
 #### [BE] Lógica transaccional de stock y totales
 
-- [ ] Crear orden dentro de una transacción.
-- [ ] Buscar productos en la base.
-- [ ] Calcular precio con descuento.
-- [ ] Validar stock suficiente.
-- [ ] Descontar stock.
-- [ ] Calcular total en el servidor.
-- [ ] Generar número de orden único.
-- [ ] Restaurar stock al cancelar.
-- [ ] Agregar pruebas de lógica.
+- [x] Crear orden dentro de una transacción.
+- [x] Buscar productos en la base.
+- [x] Calcular precio con descuento.
+- [x] Validar stock suficiente.
+- [x] Descontar stock.
+- [x] Calcular total en el servidor.
+- [x] Generar número de orden único.
+- [x] Restaurar stock al cancelar.
+- [x] Agregar pruebas de lógica.
 
 #### [BE] Endpoints de órdenes y permisos
 

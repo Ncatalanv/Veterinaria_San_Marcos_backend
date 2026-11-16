@@ -25,4 +25,6 @@ public interface OrdenRepository extends JpaRepository<Orden, Long> {
 
     @Query("SELECT o FROM Orden o LEFT JOIN FETCH o.detalles WHERE o.id = :id")
     Optional<Orden> findByIdWithDetalles(@Param("id") Long id);
+
+    Optional<Orden> findTopByOrderByIdDesc();
 }
