@@ -25,4 +25,12 @@ public interface SolicitudServicioRepository extends JpaRepository<SolicitudServ
             WHERE s.id = :id
             """)
     Optional<SolicitudServicio> findByIdWithRelations(@Param("id") Long id);
+
+    @Query("""
+            SELECT s FROM SolicitudServicio s
+            JOIN FETCH s.usuario
+            JOIN FETCH s.servicio
+            ORDER BY s.createdAt DESC
+            """)
+    List<SolicitudServicio> findUltimas(org.springframework.data.domain.Pageable pageable);
 }

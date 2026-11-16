@@ -27,4 +27,7 @@ public interface OrdenRepository extends JpaRepository<Orden, Long> {
     Optional<Orden> findByIdWithDetalles(@Param("id") Long id);
 
     Optional<Orden> findTopByOrderByIdDesc();
+
+    @Query("SELECT o FROM Orden o JOIN FETCH o.usuario ORDER BY o.createdAt DESC")
+    List<Orden> findUltimas(org.springframework.data.domain.Pageable pageable);
 }
