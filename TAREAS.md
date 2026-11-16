@@ -322,10 +322,10 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 - [x] Crear entidad `OrdenDetalle`.
 - [x] Definir estados de orden.
 - [x] Definir relaciones.
-- [ ] Crear repositorios.
+- [x] Crear repositorios.
 - [x] Verificar las tablas `ordenes` y `orden_detalle` de `V1`; no crear tablas nuevas.
 - [x] Agregar índices solo si falta alguno.
-- [ ] Probar persistencia.
+- [x] Probar persistencia.
 
 #### [BE] Lógica transaccional de stock y totales
 
