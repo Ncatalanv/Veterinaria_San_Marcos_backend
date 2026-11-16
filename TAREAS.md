@@ -403,11 +403,11 @@ En GitHub Pages, `VITE_API_URL` debe apuntar al backend público con HTTPS.
 - [x] Crear entidad `SolicitudServicio`.
 - [x] Definir estados.
 - [x] Definir relaciones con usuario y servicio.
-- [ ] Crear repositorio.
+- [x] Crear repositorio.
 - [x] Verificar la tabla `solicitudes_servicio` de `V1`; no crear tablas nuevas.
-- [ ] Implementar `POST /api/v1/service-requests`.
-- [ ] Implementar `GET /me`, `GET` admin y `GET /{id}`.
-- [ ] Documentar en Swagger.
+- [x] Implementar `POST /api/v1/service-requests`.
+- [x] Implementar `GET /me`, `GET` admin y `GET /{id}`.
+- [x] Documentar en Swagger.
 
 #### [BE] Actualización de citas y estados
 
