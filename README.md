@@ -175,7 +175,14 @@ SELECT * FROM roles ORDER BY id;
 SELECT version, description, success FROM flyway_schema_history;
 ```
 
-Resultado esperado: 10 tablas del proyecto, la tabla `flyway_schema_history`, cuatro roles y la versión `1` aplicada correctamente.
+Resultado esperado: 10 tablas del proyecto, la tabla `flyway_schema_history`, cuatro roles y las versiones `1`, `2`, `3` y `4` aplicadas correctamente.
+
+La migración `V4__seed_admin.sql` crea el usuario administrador por defecto:
+
+- Email: `admin@duocuc.cl`
+- Password: `12345678`
+
+> Este usuario existe solo para desarrollo y pruebas. En producción se debe cambiar la contraseña y no dejar credenciales conocidas.
 
 ## Estructura del proyecto
 
