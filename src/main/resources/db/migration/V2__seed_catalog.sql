@@ -23,11 +23,11 @@ SET @cat_peluqueria  = (SELECT id FROM categorias WHERE nombre = 'Peluquería' A
 SET @cat_examenes    = (SELECT id FROM categorias WHERE nombre = 'Exámenes'   AND tipo = 'SERVICIO');
 
 INSERT INTO productos (codigo, nombre, descripcion, presentacion, precio, descuento, stock, stock_critico, imagen, categoria_id) VALUES
-('ALI-001', 'Croquetas Premium Perro', 'Alimento balanceado para perros adultos', 'Bolsa 10 kg', 45990, 10, 50, 10, '/assets/images/products/croquetas-perro.jpg', @cat_alimentos),
-('ALI-002', 'Croquetas Premium Gato', 'Alimento balanceado para gatos adultos', 'Bolsa 5 kg', 32990, 0, 30, 8, '/assets/images/products/croquetas-gato.jpg', @cat_alimentos),
-('MED-001', 'Antiparasitario Interno', 'Tabletas desparasitantes para perros y gatos', 'Caja 4 tabletas', 12500, 0, 100, 20, '/assets/images/products/antiparasitario.jpg', @cat_medicamentos),
-('ACC-001', 'Correa Reflectante', 'Correa de nylon reflectante, talla M', 'Unidad', 8990, 0, 75, 15, '/assets/images/products/correa.jpg', @cat_accesorios),
-('HIG-001', 'Shampoo Hipoalergénico', 'Shampoo suave para pieles sensibles', 'Botella 250 ml', 11500, 0, 40, 10, '/assets/images/products/shampoo.jpg', @cat_higiene);
+('ALI-001', 'Croquetas Premium Perro', 'Alimento balanceado para perros adultos', 'Bolsa 10 kg', 45990, 10, 50, 10, '/assets/images/products/alimento_perro.jpg', @cat_alimentos),
+('ALI-002', 'Croquetas Premium Gato', 'Alimento balanceado para gatos adultos', 'Bolsa 5 kg', 32990, 0, 30, 8, '/assets/images/products/alimento_gato.jpg', @cat_alimentos),
+('MED-001', 'Antiparasitario Interno', 'Tabletas desparasitantes para perros y gatos', 'Caja 4 tabletas', 12500, 0, 100, 20, '/assets/images/products/antiparasitario_perro_gato.png', @cat_medicamentos),
+('ACC-001', 'Correa Reflectante', 'Correa de nylon reflectante, talla M', 'Unidad', 8990, 0, 75, 15, '/assets/images/products/correa.png', @cat_accesorios),
+('HIG-001', 'Shampoo Hipoalergénico', 'Shampoo suave para pieles sensibles', 'Botella 250 ml', 11500, 0, 40, 10, '/assets/images/products/champoo.png', @cat_higiene);
 
 INSERT INTO servicios (codigo, nombre, descripcion, especie, duracion, precio, imagen, nota, categoria_id) VALUES
 ('CON-001', 'Consulta Veterinaria General', 'Revisión completa y diagnóstico inicial', 'Perro/Gato', '30 min', 25000, '/assets/images/services/consulta.jpg', 'Incluye control de peso y temperatura', @cat_consultas),
