@@ -3,7 +3,7 @@
  'Cuidados de invierno para tu mascota',
  'Consejos',
  'Recomendaciones prǭcticas para proteger a perros y gatos durante los meses mǭs fr��os.',
- '/images/blog/cuidados-invierno.jpg',
+ '/images/veterinaria.png',
  'Perro abrigado en invierno',
  '2026-05-10',
  JSON_ARRAY(
@@ -15,7 +15,7 @@
  'La importancia de la vacunaci��n en perros y gatos',
  'Salud',
  'Vacunar a tu mascota a tiempo previene enfermedades graves y mejora su calidad de vida.',
- '/images/blog/vacunacion.jpg',
+ '/images/calendario_vacunas.png',
  'Veterinario vacunando a un cachorro',
  '2026-04-22',
  JSON_ARRAY(
@@ -27,7 +27,7 @@
  'Claves para una alimentaci��n saludable en mascotas',
  'Nutrici��n',
  'Consejos para elegir una dieta equilibrada que favorezca el bienestar de tu compa��ero.',
- '/images/blog/alimentacion-saludable.jpg',
+ '/images/alimento_perro.png',
  'Plato de alimento balanceado para mascotas',
  '2026-03-15',
  JSON_ARRAY(

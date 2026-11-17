@@ -23,15 +23,15 @@ SET @cat_peluqueria  = (SELECT id FROM categorias WHERE nombre = 'Peluquería' A
 SET @cat_examenes    = (SELECT id FROM categorias WHERE nombre = 'Exámenes'   AND tipo = 'SERVICIO');
 
 INSERT INTO productos (codigo, nombre, descripcion, presentacion, precio, descuento, stock, stock_critico, imagen, categoria_id) VALUES
-('ALI-001', 'Croquetas Premium Perro', 'Alimento balanceado para perros adultos', 'Bolsa 10 kg', 45990, 10, 50, 10, '/assets/images/products/alimento_perro.jpg', @cat_alimentos),
-('ALI-002', 'Croquetas Premium Gato', 'Alimento balanceado para gatos adultos', 'Bolsa 5 kg', 32990, 0, 30, 8, '/assets/images/products/alimento_gato.jpg', @cat_alimentos),
-('MED-001', 'Antiparasitario Interno', 'Tabletas desparasitantes para perros y gatos', 'Caja 4 tabletas', 12500, 0, 100, 20, '/assets/images/products/antiparasitario_perro_gato.png', @cat_medicamentos),
-('ACC-001', 'Correa Reflectante', 'Correa de nylon reflectante, talla M', 'Unidad', 8990, 0, 75, 15, '/assets/images/products/correa.png', @cat_accesorios),
-('HIG-001', 'Shampoo Hipoalergénico', 'Shampoo suave para pieles sensibles', 'Botella 250 ml', 11500, 0, 40, 10, '/assets/images/products/champoo.png', @cat_higiene);
+('ALI-001', 'Croquetas Premium Perro', 'Alimento balanceado para perros adultos', 'Bolsa 10 kg', 45990, 10, 50, 10, '/images/alimento_perro.png', @cat_alimentos),
+('ALI-002', 'Croquetas Premium Gato', 'Alimento balanceado para gatos adultos', 'Bolsa 5 kg', 32990, 0, 30, 8, '/images/comida_gato.png', @cat_alimentos),
+('MED-001', 'Antiparasitario Interno', 'Tabletas desparasitantes para perros y gatos', 'Caja 4 tabletas', 12500, 0, 100, 20, '/images/antiparasitario_perro_gato.png', @cat_medicamentos),
+('ACC-001', 'Correa Reflectante', 'Correa de nylon reflectante, talla M', 'Unidad', 8990, 0, 75, 15, '/images/correa.png', @cat_accesorios),
+('HIG-001', 'Shampoo Hipoalergénico', 'Shampoo suave para pieles sensibles', 'Botella 250 ml', 11500, 0, 40, 10, '/images/champoo.png', @cat_higiene);
 
 INSERT INTO servicios (codigo, nombre, descripcion, especie, duracion, precio, imagen, nota, categoria_id) VALUES
-('CON-001', 'Consulta Veterinaria General', 'Revisión completa y diagnóstico inicial', 'Perro/Gato', '30 min', 25000, '/assets/images/services/consulta.jpg', 'Incluye control de peso y temperatura', @cat_consultas),
-('VAC-001', 'Vacunación', 'Aplicación de vacunas del plan anual', 'Perro/Gato', '15 min', 18000, '/assets/images/services/vacuna.jpg', 'Traer cartilla de vacunación', @cat_vacunacion),
-('CIR-001', 'Cirugía Menor', 'Procedimientos quirúrgicos ambulatorios', 'Perro/Gato', '1-2 hrs', 150000, '/assets/images/services/cirugia.jpg', 'Previa evaluación veterinaria', @cat_cirugia),
-('PEL-001', 'Baño y Corte', 'Servicio de estética e higiene', 'Perro/Gato', '1 hr', 22000, '/assets/images/services/peluqueria.jpg', 'Confirmar disponibilidad de hora', @cat_peluqueria),
-('EXA-001', 'Examen de Sangre', 'Perfil bioquímico básico', 'Perro/Gato', '30 min', 35000, '/assets/images/services/sangre.jpg', 'Ayuno de 8 hrs previo', @cat_examenes);
+('CON-001', 'Consulta Veterinaria General', 'Revisión completa y diagnóstico inicial', 'Perro/Gato', '30 min', 25000, '/images/consulta_emergencia.png', 'Incluye control de peso y temperatura', @cat_consultas),
+('VAC-001', 'Vacunación', 'Aplicación de vacunas del plan anual', 'Perro/Gato', '15 min', 18000, '/images/vacuna.png', 'Traer cartilla de vacunación', @cat_vacunacion),
+('CIR-001', 'Cirugía Menor', 'Procedimientos quirúrgicos ambulatorios', 'Perro/Gato', '1-2 hrs', 150000, '/images/cirugia.png', 'Previa evaluación veterinaria', @cat_cirugia),
+('PEL-001', 'Baño y Corte', 'Servicio de estética e higiene', 'Perro/Gato', '1 hr', 22000, '/images/corte_pelo.png', 'Confirmar disponibilidad de hora', @cat_peluqueria),
+('EXA-001', 'Examen de Sangre', 'Perfil bioquímico básico', 'Perro/Gato', '30 min', 35000, '/images/hemograma.png', 'Ayuno de 8 hrs previo', @cat_examenes);
