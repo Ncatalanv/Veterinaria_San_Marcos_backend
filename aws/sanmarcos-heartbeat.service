@@ -1,0 +1,8 @@
+[Unit]
+Description=San Marcos API heartbeat
+After=network-online.target sanmarcos.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/sanmarcos-heartbeat.sh

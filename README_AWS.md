@@ -19,6 +19,10 @@ Guía operativa para **volver a encender** el backend, **consultar su IP** y **q
 | Servicio systemd | `sanmarcos` |
 | Base de datos | MySQL 8, base `sanmarcos_db`, usuario `sanmarcos_app` |
 | Swagger | `http://<IP>/swagger-ui/index.html` |
+| Ping | `http://<IP>/api/v1/ping` → `pong` |
+| Health | `http://<IP>/actuator/health` → `{"status":"UP"}` |
+| Logs en AWS | CloudWatch: `/aws/sanmarcos/backend` y `/aws/sanmarcos/heartbeat` |
+| Repositorios | Backend `Ncatalanv/Veterinaria_San_Marcos_backend`, frontend `jocfapaz/Veterinaria_San_Marcos_Frontend` |
 | Bucket del frontend | `veterinaria-san-marcos-frontend` (`us-east-1`) |
 | URL del frontend | `http://veterinaria-san-marcos-frontend.s3-website-us-east-1.amazonaws.com` |
 | API usada por el frontend | `VITE_API_URL=http://<IP>/api/v1` (sin `:8080`) |
@@ -89,7 +93,7 @@ El backend sigue funcionando, pero el frontend tiene la URL anterior **incrustad
    ```powershell
    cd "C:\Users\nico_\Desktop\Classes\Fullstack II\Veterinaria San Marcos\Veterinaria_San_Marcos.github.io"
    npm run build
-   aws s3 sync .\dist s3://veterinaria-san-marcos-frontend/ --delete
+   aws s3 sync .\dist s3://veterinaria-san-marcos-frontend/ --delete --exclude "*.jar"
    ```
 
    O subir el **contenido** de `dist/` desde la consola S3 (sin la carpeta `dist` en sí).
@@ -167,3 +171,100 @@ Si da `Permission denied (publickey)`, confirmar que la IP es la correcta (§3) 
 ## 8. Costos
 
 La cuenta tiene free tier por 12 meses: EC2 `t3.micro` 750 h/mes, S3 5 GB y 100 GB de transferencia saliente. Apagar la instancia fuera de clase ahorra horas, pero **cambia la IP** (ver §4).
+
+## 9. CI/CD con GitHub Actions
+
+El despliegue ya no depende de ejecutar comandos a mano: un `push` a `main` dispara los workflows.
+
+| Repositorio | Workflow | Qué hace |
+|---|---|---|
+| Backend | `.github/workflows/deploy-aws.yml` | `./mvnw test` → `./mvnw -DskipTests package` → sube el JAR a S3 → `aws ssm send-command` reinicia `sanmarcos` y valida `/actuator/health`. |
+| Frontend | `.github/workflows/deploy.yml` | `npm ci` → lint → tests → cobertura → `npm run build` con `VITE_API_URL` → publica en GitHub Pages **y** sincroniza `dist/` al bucket S3 (`--exclude "*.jar"` para no borrar el JAR del backend). |
+
+- Los `pull_request` ejecutan solo CI; **no despliegan**. El deploy ocurre únicamente en `main`.
+- El job de CI levanta un servicio `mysql:8.0` con la base `sanmarcos_db` vacía, así Flyway siembra los datos
+  y los tests son reproducibles sin depender de la MySQL local.
+- El JAR se sube a S3 y la EC2 lo descarga por su URL pública; el objeto debe ser legible públicamente.
+- Si falla cualquier etapa (`test`, `lint`, `build`), el despliegue no se ejecuta.
+- Evidencia: pestaña **Actions** del repo → corrida → artefactos `jar` y `dist`.
+
+### Configuración previa en GitHub
+
+**Secrets** (Settings → Secrets and variables → Actions):
+`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+
+**Variables** (pestaña *Variables*):
+
+| Variable | Valor |
+|---|---|
+| `AWS_REGION` | `us-east-1` |
+| `S3_BUCKET` | `veterinaria-san-marcos-frontend` |
+| `EC2_INSTANCE_ID` | `i-0ce5ae680699b5b2a` |
+| `VITE_API_URL` | `http://<IP>/api/v1` (o la URL de la Elastic IP) |
+
+Permisos: el usuario IAM usado por Actions necesita `s3:PutObject`, `s3:DeleteObject`, `ssm:SendCommand` y `ec2:DescribeInstances`. La instancia debe tener adjunto un rol con `AmazonSSMManagedInstanceCore` para poder recibir el comando; verificar con `sudo systemctl status snap.amazon-ssm-agent.amazon-ssm-agent`.
+
+## 10. Logs en AWS (CloudWatch)
+
+- En la instancia: `sudo journalctl -u sanmarcos -n 100 --no-pager`.
+- El servicio escribe además a `/var/log/sanmarcos/application.log` (variable `LOG_FILE` en `/etc/sanmarcos.env`).
+- CloudWatch agrupa los logs en `/aws/sanmarcos/backend` (aplicación) y `/aws/sanmarcos/heartbeat` (latidos), con retención de 14 días.
+
+Instalación del agente (una sola vez, dentro de la instancia):
+
+1. Adjuntar al rol de la instancia la política `CloudWatchAgentServerPolicy` (la retención de 14 días requiere además `logs:PutRetentionPolicy`).
+2. Copiar la carpeta `aws/` del repo a la instancia y ejecutar:
+
+   ```bash
+   echo 'LOG_FILE=/var/log/sanmarcos/application.log' | sudo tee -a /etc/sanmarcos.env
+   sudo systemctl restart sanmarcos
+   cd /ruta/al/repo/sanmarcos/aws
+   sudo bash setup-monitoring.sh
+   ```
+
+3. Verificar desde tu PC:
+
+   ```powershell
+   aws logs tail /aws/sanmarcos/backend --since 30m --follow
+   ```
+
+Consulta útil en CloudWatch → Logs Insights:
+
+```
+fields @timestamp, @message
+| filter @message like /ERROR/
+| sort @timestamp desc
+| limit 20
+```
+
+## 11. Ping y health
+
+Dos niveles distintos, ambos públicos (permitidos en `SecurityConfig`):
+
+```bash
+curl http://<IP>/api/v1/ping          # pong → el proceso está vivo
+curl http://<IP>/actuator/health      # {"status":"UP", ...} → BD, disco y estado de la app
+curl http://<IP>/actuator/health/liveness
+curl http://<IP>/actuator/health/readiness
+```
+
+`actuator` se agregó en `pom.xml` y se configuró en `application.yml`. El indicador `db` usa el `DataSource`, así que un `DOWN` significa que MySQL no responde. No exponer `show-details: always` sin autenticación: el valor actual es `when_authorized`.
+
+## 12. Heartbeat y alarma
+
+`aws/heartbeat.sh` consulta `/actuator/health` cada minuto mediante un timer de systemd y escribe
+`HEARTBEAT OK` o `HEARTBEAT FAIL` en `/var/log/sanmarcos/heartbeat.log`.
+
+```bash
+sudo systemctl status sanmarcos-heartbeat.timer
+sudo journalctl -u sanmarcos-heartbeat.service -n 20 --no-pager
+tail -f /var/log/sanmarcos/heartbeat.log
+```
+
+En CloudWatch → Logs → Create metric filter sobre `/aws/sanmarcos/heartbeat`:
+
+- Filter pattern: `"HEARTBEAT OK"`
+- Metric name: `SanMarcosHeartbeat`, value `1`, unit `Count`.
+
+Luego crear una alarma: `Sum(SanMarcosHeartbeat) < 1` durante **5 minutos**, tratando los datos faltantes como *breaching*. Así se detecta tanto una caída del servicio como la del propio timer.
+

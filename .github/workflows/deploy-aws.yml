@@ -1,0 +1,93 @@
+name: CI/CD backend AWS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-deploy
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: 1. Build y tests
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: sanmarcos_db
+          MYSQL_USER: sanmarcos_app
+          MYSQL_PASSWORD: '1234'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=15
+    env:
+      DB_URL: 'jdbc:mysql://127.0.0.1:3306/sanmarcos_db?serverTimezone=America/Santiago&useSSL=false&allowPublicKeyRetrieval=true'
+      DB_USERNAME: sanmarcos_app
+      DB_PASSWORD: '1234'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Tests
+        run: ./mvnw -B test
+
+      - name: Package
+        run: ./mvnw -B -DskipTests package
+
+      - name: Subir JAR como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar
+          path: target/sanmarcos-0.0.1-SNAPSHOT.jar
+          if-no-files-found: error
+
+  deploy:
+    name: 2. Despliegue en EC2
+    needs: ci
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: jar
+          path: artifacts
+
+      - name: Configurar credenciales AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - name: Subir JAR a S3
+        run: aws s3 cp artifacts/sanmarcos-0.0.1-SNAPSHOT.jar s3://${{ vars.S3_BUCKET || 'veterinaria-san-marcos-frontend' }}/sanmarcos-0.0.1-SNAPSHOT.jar
+
+      - name: Reiniciar servicio en EC2
+        run: |
+          aws ssm send-command \
+            --instance-ids "${{ vars.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy backend San Marcos" \
+            --parameters 'commands=["curl -fL -o /home/ubuntu/sanmarcos-0.0.1-SNAPSHOT.jar https://veterinaria-san-marcos-frontend.s3.amazonaws.com/sanmarcos-0.0.1-SNAPSHOT.jar","sudo systemctl restart sanmarcos","sleep 5","curl -fsS http://localhost/actuator/health"]' \
+            --output text

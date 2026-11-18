@@ -32,6 +32,31 @@ app:
     expiration: "${JWT_EXPIRATION:7200}"
 
 
+logging:
+  file:
+    name: ${LOG_FILE:logs/application.log}
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 7
+      total-size-cap: 100MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
 springdoc:
   api-docs:
     path: /v3/api-docs

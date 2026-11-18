@@ -62,6 +62,10 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
+                                "/actuator/health/**",
+                                "/actuator/health",
+                                "/actuator/info",
+                                "/api/v1/ping",
                                 "/error").permitAll()
                         .anyRequest().authenticated()
                 );

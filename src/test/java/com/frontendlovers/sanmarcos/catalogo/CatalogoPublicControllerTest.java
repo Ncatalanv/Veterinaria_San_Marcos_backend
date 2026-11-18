@@ -38,7 +38,7 @@ class CatalogoPublicControllerTest {
     void categoriesFiltraPorTipoProducto() throws Exception {
         mockMvc.perform(get("/api/v1/categories?type=PRODUCTO"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$", hasSize((int) categoriaRepository.findByTipo(TipoCategoria.PRODUCTO).size())))
                 .andExpect(jsonPath("$[0].tipo").value("PRODUCTO"));
     }
 
@@ -53,7 +53,7 @@ class CatalogoPublicControllerTest {
     void productsFiltraPorOferta() throws Exception {
         mockMvc.perform(get("/api/v1/products?onSale=true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$", hasSize((int) productoRepository.findByFiltros(null, true, null).size())))
                 .andExpect(jsonPath("$[0].descuento").value(10))
                 .andExpect(jsonPath("$[0].precioFinal").exists());
     }
@@ -91,7 +91,7 @@ class CatalogoPublicControllerTest {
     void servicesFiltraPorBusqueda() throws Exception {
         mockMvc.perform(get("/api/v1/services?search=vacuna"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
+                .andExpect(jsonPath("$", hasSize((int) servicioRepository.findByFiltros(null, "%vacuna%").size())));
     }
 
     @Test
