@@ -1,5 +1,7 @@
 # Veterinaria San Marcos - Backend
 
+> **Despliegue en AWS (producción):** consulta [`README_AWS.md`](./README_AWS.md) para encender la instancia, ver la IP pública y actualizar el frontend cuando la IP cambia.
+
 API REST para la gestión de la Veterinaria San Marcos. El proyecto está construido con Spring Boot, MySQL y Flyway, y será consumido por el frontend React del repositorio `Veterinaria_San_Marcos.github.io`.
 
 ## Tecnologías
