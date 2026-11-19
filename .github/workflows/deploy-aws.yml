@@ -96,6 +96,12 @@ jobs:
             curl -fL -o /home/ubuntu/sanmarcos-0.0.1-SNAPSHOT.jar \
               "https://${{ vars.S3_BUCKET || 'veterinaria-san-marcos-frontend' }}.s3.amazonaws.com/sanmarcos-0.0.1-SNAPSHOT.jar"
             sudo systemctl restart sanmarcos
-            sleep 5
-            curl -fsS http://localhost/actuator/health
+            for i in $(seq 1 30); do
+              if curl -fsS http://127.0.0.1/actuator/health; then
+                exit 0
+              fi
+              sleep 3
+            done
+            sudo journalctl -u sanmarcos -n 80 --no-pager
+            exit 1
           EOF
