@@ -258,7 +258,9 @@ Credenciales de AWS Academy: al iniciar un nuevo lab cambian los tres secrets de
 - El servicio escribe además a `/var/log/sanmarcos/application.log` (variable `LOG_FILE` en `/etc/sanmarcos.env`).
 - CloudWatch agrupa los logs en `/aws/sanmarcos/backend` (aplicación) y `/aws/sanmarcos/heartbeat` (latidos), con retención de 14 días.
 
-Instalación del agente (una sola vez, dentro de la instancia):
+El workflow `deploy-aws.yml` copia e instala automáticamente el heartbeat y el CloudWatch Agent en cada deploy a `main`. También agrega `LOG_FILE=/var/log/sanmarcos/application.log` a `/etc/sanmarcos.env` si aún no existe. Si la EC2 no tiene rol IAM, el deploy continúa y muestra una advertencia: el heartbeat queda disponible en el equipo, pero CloudWatch no podrá publicar los grupos `/aws/sanmarcos/*`.
+
+Instalación manual del agente, solo si el deploy automático no pudo ejecutarse:
 
 1. Adjuntar al rol de la instancia la política `CloudWatchAgentServerPolicy` (la retención de 14 días requiere además `logs:PutRetentionPolicy`). Esta política es solo para CloudWatch Logs; el deploy por SSH no la necesita.
 2. Copiar la carpeta `aws/` del repo a la instancia y ejecutar:

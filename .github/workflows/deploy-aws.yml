@@ -67,6 +67,9 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Descargar JAR
         uses: actions/download-artifact@v4
         with:
@@ -92,16 +95,62 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=accept-new \
+            aws/heartbeat.sh \
+            aws/sanmarcos-heartbeat.service \
+            aws/sanmarcos-heartbeat.timer \
+            aws/cloudwatch-agent-config.json \
+            ubuntu@"$EC2_HOST":/tmp/
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=accept-new ubuntu@"$EC2_HOST" <<'EOF'
+            set -e
+            sudo mkdir -p /var/log/sanmarcos
+            if ! sudo grep -q '^LOG_FILE=' /etc/sanmarcos.env; then
+              echo 'LOG_FILE=/var/log/sanmarcos/application.log' | sudo tee -a /etc/sanmarcos.env >/dev/null
+            fi
             curl -fL -o /home/ubuntu/sanmarcos-0.0.1-SNAPSHOT.jar \
               "https://${{ vars.S3_BUCKET || 'veterinaria-san-marcos-frontend' }}.s3.amazonaws.com/sanmarcos-0.0.1-SNAPSHOT.jar"
             sudo systemctl restart sanmarcos
             for i in $(seq 1 30); do
               if curl -fsS http://127.0.0.1/actuator/health; then
-                exit 0
+                break
               fi
               sleep 3
             done
-            sudo journalctl -u sanmarcos -n 80 --no-pager
-            exit 1
+            sudo install -m 0755 /tmp/heartbeat.sh /usr/local/bin/sanmarcos-heartbeat.sh
+            sudo install -m 0644 /tmp/sanmarcos-heartbeat.service /etc/systemd/system/sanmarcos-heartbeat.service
+            sudo install -m 0644 /tmp/sanmarcos-heartbeat.timer /etc/systemd/system/sanmarcos-heartbeat.timer
+            sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/etc
+            sudo install -m 0644 /tmp/cloudwatch-agent-config.json /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+            if ! command -v amazon-cloudwatch-agent-ctl >/dev/null 2>&1; then
+              if ! wget -q -O /tmp/amazon-cloudwatch-agent.deb https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb; then
+                echo "AVISO: no se pudo descargar CloudWatch Agent."
+              elif ! sudo dpkg -i /tmp/amazon-cloudwatch-agent.deb; then
+                echo "AVISO: no se pudo instalar CloudWatch Agent."
+              fi
+            fi
+            if ! command -v amazon-cloudwatch-agent-ctl >/dev/null 2>&1; then
+              echo "AVISO: CloudWatch Agent no está disponible."
+            else
+              TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" || true)
+              IAM_ROLE=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" "http://169.254.169.254/latest/meta-data/iam/security-credentials/" || true)
+              if [ -z "$IAM_ROLE" ]; then
+                echo "AVISO: la EC2 no tiene rol IAM; CloudWatch no podra publicar logs."
+              else
+                echo "Rol IAM de EC2: $IAM_ROLE"
+              fi
+              if ! sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+                -a fetch-config -m ec2 -s \
+                -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json; then
+                echo "AVISO: CloudWatch Agent no pudo iniciar; revisar permisos IAM."
+              fi
+            fi
+            sudo systemctl daemon-reload
+            sudo systemctl enable --now sanmarcos-heartbeat.timer
+            if ! curl -fsS http://127.0.0.1/actuator/health; then
+              sudo journalctl -u sanmarcos -n 80 --no-pager
+              exit 1
+            fi
+            sudo systemctl status sanmarcos --no-pager
+            sudo systemctl status amazon-cloudwatch-agent --no-pager || true
+            sudo systemctl status sanmarcos-heartbeat.timer --no-pager
           EOF
