@@ -125,6 +125,29 @@ sudo grep CORS /etc/sanmarcos.env
 
 `grep` necesita `sudo` porque `/etc/sanmarcos.env` tiene permisos `600`.
 
+### Si el log dice `Migration checksum mismatch`
+
+Síntoma típico:
+
+```
+FlywayValidateException: Validate failed: Migrations have failed validation
+Migration checksum mismatch for migration version 2 / 3
+```
+
+Causa: se editaron `V2__seed_catalog.sql` y `V3__seed_posts.sql` **después** de que Flyway ya las había aplicado en la BD. Flyway no permite cambiar el contenido de una migración aplicada. En este repo ya está corregido: V2 y V3 volvieron a su contenido original y el cambio de rutas de imágenes se movió a la migración nueva `V5__fix_seed_image_paths.sql`.
+
+Si una BD ya registró otros checksums (por ejemplo, se desplegó una versión intermedia), bastó con reparar el historial **una sola vez**:
+
+```bash
+echo 'SPRING_FLYWAY_REPAIR_ON_MIGRATE=true' | sudo tee -a /etc/sanmarcos.env
+sudo systemctl restart sanmarcos
+curl -fsS http://127.0.0.1/actuator/health   # esperar a que responda UP
+sudo sed -i '/SPRING_FLYWAY_REPAIR_ON_MIGRATE/d' /etc/sanmarcos.env
+sudo systemctl restart sanmarcos
+```
+
+> Regla para adelante: los cambios de datos van en una migración nueva (`V6`, `V7`, ...), nunca editando una ya aplicada.
+
 Comprobaciones externas:
 
 - Regla **inbound** `Custom TCP`, puerto **80**, source `0.0.0.0/0` en el Security Group de la instancia.
