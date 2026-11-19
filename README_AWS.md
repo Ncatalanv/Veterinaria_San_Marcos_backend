@@ -178,20 +178,29 @@ El despliegue ya no depende de ejecutar comandos a mano: un `push` a `main` disp
 
 | Repositorio | Workflow | Qué hace |
 |---|---|---|
-| Backend | `.github/workflows/deploy-aws.yml` | `./mvnw test` → `./mvnw -DskipTests package` → sube el JAR a S3 → `aws ssm send-command` reinicia `sanmarcos` y valida `/actuator/health`. |
+| Backend | `.github/workflows/deploy-aws.yml` | `bash ./mvnw test` → `bash ./mvnw -DskipTests package` → sube el JAR a S3 → SSH a la EC2 para reiniciar `sanmarcos` y validar `/actuator/health`. |
 | Frontend | `.github/workflows/deploy.yml` | `npm ci` → lint → tests → cobertura → `npm run build` con `VITE_API_URL` → publica en GitHub Pages **y** sincroniza `dist/` al bucket S3 (`--exclude "*.jar"` para no borrar el JAR del backend). |
 
 - Los `pull_request` ejecutan solo CI; **no despliegan**. El deploy ocurre únicamente en `main`.
 - El job de CI levanta un servicio `mysql:8.0` con la base `sanmarcos_db` vacía, así Flyway siembra los datos
   y los tests son reproducibles sin depender de la MySQL local.
 - El JAR se sube a S3 y la EC2 lo descarga por su URL pública; el objeto debe ser legible públicamente.
+- El reinicio de la EC2 se hace por SSH, no por Systems Manager: AWS Academy bloquea IAM/SSM (`iam:ListInstanceProfiles`, creación de usuarios/roles, etc.).
+- Si la instancia cambia de IP, actualizar el secret `EC2_HOST`; si cambia la llave, actualizar `EC2_SSH_KEY`.
 - Si falla cualquier etapa (`test`, `lint`, `build`), el despliegue no se ejecuta.
 - Evidencia: pestaña **Actions** del repo → corrida → artefactos `jar` y `dist`.
 
 ### Configuración previa en GitHub
 
 **Secrets** (Settings → Secrets and variables → Actions):
-`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+
+| Secret | Valor |
+|---|---|
+| `AWS_ACCESS_KEY_ID` | Credencial AWS usada por Actions |
+| `AWS_SECRET_ACCESS_KEY` | Credencial AWS usada por Actions |
+| `AWS_SESSION_TOKEN` | Token temporal de AWS Academy; se renueva al reiniciar el lab |
+| `EC2_HOST` | IP pública de la instancia EC2 |
+| `EC2_SSH_KEY` | Contenido completo del `.pem`, incluyendo `BEGIN`/`END`; pegar sin comillas ni espacios extra |
 
 **Variables** (pestaña *Variables*):
 
@@ -199,10 +208,12 @@ El despliegue ya no depende de ejecutar comandos a mano: un `push` a `main` disp
 |---|---|
 | `AWS_REGION` | `us-east-1` |
 | `S3_BUCKET` | `veterinaria-san-marcos-frontend` |
-| `EC2_INSTANCE_ID` | `i-0ce5ae680699b5b2a` |
+| `EC2_INSTANCE_ID` | `i-0ce5ae680699b5b2a` (referencia; ya no se usa en el deploy) |
 | `VITE_API_URL` | `http://<IP>/api/v1` (o la URL de la Elastic IP) |
 
-Permisos: el usuario IAM usado por Actions necesita `s3:PutObject`, `s3:DeleteObject`, `ssm:SendCommand` y `ec2:DescribeInstances`. La instancia debe tener adjunto un rol con `AmazonSSMManagedInstanceCore` para poder recibir el comando; verificar con `sudo systemctl status snap.amazon-ssm-agent.amazon-ssm-agent`.
+Permisos: el usuario IAM usado por Actions necesita `s3:PutObject` y `s3:DeleteObject`. El deploy ya no usa `ssm:SendCommand` ni `ec2:DescribeInstances`, y la EC2 no necesita `AmazonSSMManagedInstanceCore` para recibir el reinicio. El Security Group de la instancia debe permitir tráfico entrante `SSH / TCP 22`; para la demo se puede usar origen `0.0.0.0/0`, y en producción conviene restringirlo.
+
+Credenciales de AWS Academy: al iniciar un nuevo lab cambian los tres secrets de AWS (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`). Las claves `ASIA...` son temporales; GitHub no las renueva automáticamente.
 
 ## 10. Logs en AWS (CloudWatch)
 
@@ -212,7 +223,7 @@ Permisos: el usuario IAM usado por Actions necesita `s3:PutObject`, `s3:DeleteOb
 
 Instalación del agente (una sola vez, dentro de la instancia):
 
-1. Adjuntar al rol de la instancia la política `CloudWatchAgentServerPolicy` (la retención de 14 días requiere además `logs:PutRetentionPolicy`).
+1. Adjuntar al rol de la instancia la política `CloudWatchAgentServerPolicy` (la retención de 14 días requiere además `logs:PutRetentionPolicy`). Esta política es solo para CloudWatch Logs; el deploy por SSH no la necesita.
 2. Copiar la carpeta `aws/` del repo a la instancia y ejecutar:
 
    ```bash

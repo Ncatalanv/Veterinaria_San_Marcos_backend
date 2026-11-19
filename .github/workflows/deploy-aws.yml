@@ -85,10 +85,17 @@ jobs:
         run: aws s3 cp artifacts/sanmarcos-0.0.1-SNAPSHOT.jar s3://${{ vars.S3_BUCKET || 'veterinaria-san-marcos-frontend' }}/sanmarcos-0.0.1-SNAPSHOT.jar
 
       - name: Reiniciar servicio en EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
-          aws ssm send-command \
-            --instance-ids "${{ vars.EC2_INSTANCE_ID }}" \
-            --document-name "AWS-RunShellScript" \
-            --comment "Deploy backend San Marcos" \
-            --parameters 'commands=["curl -fL -o /home/ubuntu/sanmarcos-0.0.1-SNAPSHOT.jar https://veterinaria-san-marcos-frontend.s3.amazonaws.com/sanmarcos-0.0.1-SNAPSHOT.jar","sudo systemctl restart sanmarcos","sleep 5","curl -fsS http://localhost/actuator/health"]' \
-            --output text
+          mkdir -p ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=accept-new ubuntu@"$EC2_HOST" <<'EOF'
+            curl -fL -o /home/ubuntu/sanmarcos-0.0.1-SNAPSHOT.jar \
+              "https://${{ vars.S3_BUCKET || 'veterinaria-san-marcos-frontend' }}.s3.amazonaws.com/sanmarcos-0.0.1-SNAPSHOT.jar"
+            sudo systemctl restart sanmarcos
+            sleep 5
+            curl -fsS http://localhost/actuator/health
+          EOF
