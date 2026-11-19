@@ -136,15 +136,29 @@ Migration checksum mismatch for migration version 2 / 3
 
 Causa: se editaron `V2__seed_catalog.sql` y `V3__seed_posts.sql` **después** de que Flyway ya las había aplicado en la BD. Flyway no permite cambiar el contenido de una migración aplicada. En este repo ya está corregido: V2 y V3 volvieron a su contenido original y el cambio de rutas de imágenes se movió a la migración nueva `V5__fix_seed_image_paths.sql`.
 
-Si una BD ya registró otros checksums (por ejemplo, se desplegó una versión intermedia), bastó con reparar el historial **una sola vez**:
+Si una BD ya registró otros checksums (por ejemplo, se desplegó una versión intermedia), hay que alinear el historial con el contenido del JAR **una sola vez**. En el log aparecen los valores esperados:
+
+```
+Migration checksum mismatch for migration version 2
+-> Applied to database : -1134182992
+-> Resolved locally    : 607015317
+Migration checksum mismatch for migration version 3
+-> Applied to database : 1499441380
+-> Resolved locally    : 1590691046
+```
+
+Actualizar los checksums con los valores `Resolved locally` y reiniciar:
 
 ```bash
-echo 'SPRING_FLYWAY_REPAIR_ON_MIGRATE=true' | sudo tee -a /etc/sanmarcos.env
+sudo mysql -e "UPDATE sanmarcos_db.flyway_schema_history SET checksum=607015317 WHERE version='2'; UPDATE sanmarcos_db.flyway_schema_history SET checksum=1590691046 WHERE version='3';"
 sudo systemctl restart sanmarcos
 curl -fsS http://127.0.0.1/actuator/health   # esperar a que responda UP
-sudo sed -i '/SPRING_FLYWAY_REPAIR_ON_MIGRATE/d' /etc/sanmarcos.env
-sudo systemctl restart sanmarcos
+sudo mysql -N -e "SELECT installed_rank, version, description, success FROM sanmarcos_db.flyway_schema_history ORDER BY installed_rank;"
 ```
+
+La última consulta debe mostrar también la fila `5 - fix seed image paths` con `success = 1`.
+
+> ⚠️ No usar `SPRING_FLYWAY_REPAIR_ON_MIGRATE=true`: esa propiedad **no existe** en Spring Boot 3.3.5 (`FlywayProperties` no expone `repairOnMigrate`), por lo que el flag se ignora silenciosamente. El procedimiento de arriba es el equivalente a `flyway repair` para este caso.
 
 > Regla para adelante: los cambios de datos van en una migración nueva (`V6`, `V7`, ...), nunca editando una ya aplicada.
 
