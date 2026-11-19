@@ -154,3 +154,58 @@ jobs:
             sudo systemctl status amazon-cloudwatch-agent --no-pager || true
             sudo systemctl status sanmarcos-heartbeat.timer --no-pager
           EOF
+
+      - name: Verificar monitoreo
+        if: always()
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+          S3_BUCKET: ${{ vars.S3_BUCKET || 'veterinaria-san-marcos-frontend' }}
+        run: |
+          set +e
+          mkdir -p verification
+          {
+            echo "FECHA: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            echo "RUN: ${{ github.run_number }}"
+            echo "COMMIT: ${{ github.sha }}"
+          } > verification/monitoreo.txt
+          mkdir -p ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=accept-new ubuntu@"$EC2_HOST" <<'EOF' >> verification/monitoreo.txt 2>&1
+            echo "=== SERVICIOS EC2 ==="
+            echo "sanmarcos=$(sudo systemctl is-active sanmarcos 2>&1)"
+            echo "heartbeat_timer=$(sudo systemctl is-active sanmarcos-heartbeat.timer 2>&1)"
+            echo "cloudwatch_agent=$(sudo systemctl is-active amazon-cloudwatch-agent 2>&1)"
+            echo "=== ROL IAM ==="
+            TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" || true)
+            IAM_ROLE=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" "http://169.254.169.254/latest/meta-data/iam/security-credentials/" || true)
+            if [ -z "$IAM_ROLE" ]; then
+              IAM_ROLE=$(curl -s "http://169.254.169.254/latest/meta-data/iam/security-credentials/" || true)
+            fi
+            echo "IAM_ROLE=${IAM_ROLE:-SIN_ROL}"
+            echo "=== ARCHIVOS ==="
+            sudo ls -l /var/log/sanmarcos 2>&1 || true
+            sudo ls -l /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json 2>&1 || true
+            echo "=== HEALTH LOCAL ==="
+            curl -fsS http://127.0.0.1/actuator/health 2>&1 || true
+            echo
+            echo "=== LOG APP ==="
+            sudo tail -n 20 /var/log/sanmarcos/application.log 2>&1 || true
+            echo "=== LOG HEARTBEAT ==="
+            sudo tail -n 20 /var/log/sanmarcos/heartbeat.log 2>&1 || true
+            echo "=== LOG CLOUDWATCH AGENT ==="
+            sudo tail -n 20 /var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log 2>&1 || true
+          EOF
+          {
+            echo "=== GRUPOS CLOUDWATCH ==="
+            aws logs describe-log-groups --region "$AWS_REGION" --log-group-name-prefix /aws/sanmarcos --query 'logGroups[].logGroupName' --output text 2>&1 || true
+            echo "=== EVENTOS CLOUDWATCH ==="
+            for group in /aws/sanmarcos/backend /aws/sanmarcos/heartbeat; do
+              echo "--- $group ---"
+              aws logs describe-log-events --region "$AWS_REGION" --log-group-name "$group" --limit 5 --query 'events[].message' --output text 2>&1 || true
+            done
+          } >> verification/monitoreo.txt 2>&1
+          set -e
+          aws s3 cp verification/monitoreo.txt "s3://$S3_BUCKET/verificacion-monitoreo.txt" --content-type text/plain
