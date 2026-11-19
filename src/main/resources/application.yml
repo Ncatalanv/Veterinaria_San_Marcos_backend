@@ -21,6 +21,11 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+  jackson:
+    mapper:
+      # Acepta "envio"/"retiro" además de "ENVIO"/"RETIRO" en los enums del API.
+      accept-case-insensitive-enums: true
+
 server:
   port: ${SERVER_PORT:8080}
 
