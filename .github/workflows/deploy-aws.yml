@@ -91,15 +91,27 @@ jobs:
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          printf '[default]\naws_access_key_id = %s\naws_secret_access_key = %s\naws_session_token = %s\nregion = %s\n' \
+            "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" "$AWS_SESSION_TOKEN" "$AWS_REGION" \
+            > /tmp/sanmarcos-aws-credentials
+          printf '[credentials]\nshared_credential_profile = "default"\nshared_credential_file = "/root/.aws/credentials"\n' \
+            > /tmp/sanmarcos-cloudwatch-common-config.toml
+          chmod 600 /tmp/sanmarcos-aws-credentials
           scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=accept-new \
             aws/heartbeat.sh \
             aws/sanmarcos-heartbeat.service \
             aws/sanmarcos-heartbeat.timer \
             aws/cloudwatch-agent-config.json \
+            /tmp/sanmarcos-aws-credentials \
+            /tmp/sanmarcos-cloudwatch-common-config.toml \
             ubuntu@"$EC2_HOST":/tmp/
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=accept-new ubuntu@"$EC2_HOST" <<'EOF'
             set -e
@@ -119,8 +131,6 @@ jobs:
             sudo install -m 0755 /tmp/heartbeat.sh /usr/local/bin/sanmarcos-heartbeat.sh
             sudo install -m 0644 /tmp/sanmarcos-heartbeat.service /etc/systemd/system/sanmarcos-heartbeat.service
             sudo install -m 0644 /tmp/sanmarcos-heartbeat.timer /etc/systemd/system/sanmarcos-heartbeat.timer
-            sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/etc
-            sudo install -m 0644 /tmp/cloudwatch-agent-config.json /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
             if ! command -v amazon-cloudwatch-agent-ctl >/dev/null 2>&1; then
               if ! wget -q -O /tmp/amazon-cloudwatch-agent.deb https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb; then
                 echo "AVISO: no se pudo descargar CloudWatch Agent."
@@ -128,21 +138,17 @@ jobs:
                 echo "AVISO: no se pudo instalar CloudWatch Agent."
               fi
             fi
+            sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/etc
+            sudo mkdir -p /root/.aws
+            sudo install -m 0644 /tmp/cloudwatch-agent-config.json /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+            sudo install -m 0644 /tmp/sanmarcos-cloudwatch-common-config.toml /opt/aws/amazon-cloudwatch-agent/etc/common-config.toml
+            sudo install -m 0600 /tmp/sanmarcos-aws-credentials /root/.aws/credentials
             if ! command -v amazon-cloudwatch-agent-ctl >/dev/null 2>&1; then
               echo "AVISO: CloudWatch Agent no está disponible."
-            else
-              TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" || true)
-              IAM_ROLE=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" "http://169.254.169.254/latest/meta-data/iam/security-credentials/" || true)
-              if [ -z "$IAM_ROLE" ]; then
-                echo "AVISO: la EC2 no tiene rol IAM; CloudWatch no podra publicar logs."
-              else
-                echo "Rol IAM de EC2: $IAM_ROLE"
-              fi
-              if ! sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
-                -a fetch-config -m ec2 -s \
-                -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json; then
-                echo "AVISO: CloudWatch Agent no pudo iniciar; revisar permisos IAM."
-              fi
+            elif ! sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+              -a fetch-config -m ec2 -s \
+              -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json; then
+              echo "AVISO: CloudWatch Agent no pudo iniciar; revisar credenciales y permisos."
             fi
             sudo systemctl daemon-reload
             sudo systemctl enable --now sanmarcos-heartbeat.timer
@@ -180,19 +186,23 @@ jobs:
             echo "cloudwatch_agent=$(sudo systemctl is-active amazon-cloudwatch-agent 2>&1)"
             echo "=== ROL IAM ==="
             TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" || true)
-            IAM_ROLE=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" "http://169.254.169.254/latest/meta-data/iam/security-credentials/" || true)
+            IAM_ROLE=$(curl -fsS -H "X-aws-ec2-metadata-token: $TOKEN" "http://169.254.169.254/latest/meta-data/iam/security-credentials/" 2>/dev/null || true)
             if [ -z "$IAM_ROLE" ]; then
-              IAM_ROLE=$(curl -s "http://169.254.169.254/latest/meta-data/iam/security-credentials/" || true)
+              IAM_ROLE=$(curl -fsS "http://169.254.169.254/latest/meta-data/iam/security-credentials/" 2>/dev/null || true)
             fi
-            echo "IAM_ROLE=${IAM_ROLE:-SIN_ROL}"
+            if [ -z "$IAM_ROLE" ] || [[ "$IAM_ROLE" == "<"* ]]; then
+              IAM_ROLE="SIN_ROL"
+            fi
+            echo "IAM_ROLE=$IAM_ROLE"
             echo "=== ARCHIVOS ==="
             sudo ls -l /var/log/sanmarcos 2>&1 || true
-            sudo ls -l /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json 2>&1 || true
+            sudo ls -l /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json /opt/aws/amazon-cloudwatch-agent/etc/common-config.toml /root/.aws/credentials 2>&1 || true
             echo "=== HEALTH LOCAL ==="
             curl -fsS http://127.0.0.1/actuator/health 2>&1 || true
             echo
             echo "=== LOG APP ==="
-            sudo tail -n 20 /var/log/sanmarcos/application.log 2>&1 || true
+            sudo stat -c '%n %s bytes %y' /var/log/sanmarcos/application.log 2>&1 || true
+            sudo grep -E 'Tomcat started|Started SanmarcosApplication' /var/log/sanmarcos/application.log 2>/dev/null | tail -n 2 || true
             echo "=== LOG HEARTBEAT ==="
             sudo tail -n 20 /var/log/sanmarcos/heartbeat.log 2>&1 || true
             echo "=== LOG CLOUDWATCH AGENT ==="
@@ -204,7 +214,7 @@ jobs:
             echo "=== EVENTOS CLOUDWATCH ==="
             for group in /aws/sanmarcos/backend /aws/sanmarcos/heartbeat; do
               echo "--- $group ---"
-              aws logs describe-log-events --region "$AWS_REGION" --log-group-name "$group" --limit 5 --query 'events[].message' --output text 2>&1 || true
+              aws logs filter-log-events --region "$AWS_REGION" --log-group-name "$group" --limit 5 --query 'events[].message' --output text 2>&1 || true
             done
           } >> verification/monitoreo.txt 2>&1
           set -e

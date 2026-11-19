@@ -258,7 +258,7 @@ Credenciales de AWS Academy: al iniciar un nuevo lab cambian los tres secrets de
 - El servicio escribe además a `/var/log/sanmarcos/application.log` (variable `LOG_FILE` en `/etc/sanmarcos.env`).
 - CloudWatch agrupa los logs en `/aws/sanmarcos/backend` (aplicación) y `/aws/sanmarcos/heartbeat` (latidos), con retención de 14 días.
 
-El workflow `deploy-aws.yml` copia e instala automáticamente el heartbeat y el CloudWatch Agent en cada deploy a `main`. También agrega `LOG_FILE=/var/log/sanmarcos/application.log` a `/etc/sanmarcos.env` si aún no existe. Si la EC2 no tiene rol IAM, el deploy continúa y muestra una advertencia: el heartbeat queda disponible en el equipo, pero CloudWatch no podrá publicar los grupos `/aws/sanmarcos/*`.
+El workflow `deploy-aws.yml` copia e instala automáticamente el heartbeat y el CloudWatch Agent en cada deploy a `main`. También agrega `LOG_FILE=/var/log/sanmarcos/application.log` a `/etc/sanmarcos.env` si aún no existe. Si la EC2 no tiene rol IAM, el workflow usa las credenciales temporales de AWS Academy de los secrets de GitHub y las renueva en `/root/.aws/credentials`; al cambiar de laboratorio hay que hacer un nuevo deploy para refrescar el `AWS_SESSION_TOKEN`.
 
 Instalación manual del agente, solo si el deploy automático no pudo ejecutarse:
 
